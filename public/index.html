@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Repuestos Mérida Administrados</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <h1>Repuestos Mérida</h1>
+  <div class="container">
+    <div class="img-box">
+      <img src="iconorm.png" alt="Repuestos">
+    </div>
+    <div class="form-box">
+      <h1>Inicia Sesion</h1>
+      <input id="email" type="email" placeholder="Correo">
+      <input id="password" type="password" placeholder="Contraseña">
+      <button onclick="login()">Iniciar sesión</button>
+      <div id="rolInfo" style="margin-top: 10px;"></div>
+    </div>
+  </div>
+
+  <div id="rolInfo" style="margin-top: 20px;"></div>
+
+  <div id="clientePanel" style="display: none;">
+    <h2>Buscar Repuestos</h2>
+    <input id="filtroNombre" placeholder="Nombre">
+    <button onclick="buscarRepuestos()">Buscar</button>
+    <ul id="resultados"></ul>
+    <h3>Comprar (simulado)</h3>
+    <input id="repuestoID" placeholder="ID del repuesto">
+    <input id="cantidad" type="number" placeholder="Cantidad">
+    <button onclick="comprar()">Comprar</button>
+  </div>
+
+  <div id="vendedorPanel" style="display: none;">
+    <h2>Mis ventas</h2>
+    <button onclick="verMisVentas()">Ver</button>
+    <ul id="ventasList"></ul>
+  </div>
+  <script src="app.js"></script>
+</body>
+</html>
