@@ -210,6 +210,36 @@ LOCK TABLES `Genero` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `historial_cambios`
+--
+
+DROP TABLE IF EXISTS `historial_cambios`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `historial_cambios` (
+  `id_historial` int NOT NULL AUTO_INCREMENT,
+  `tabla_afectada` varchar(50) DEFAULT NULL,
+  `id_registro` int DEFAULT NULL,
+  `tipo_cambio` enum('INSERT','UPDATE','DELETE') DEFAULT NULL,
+  `campo_modificado` varchar(50) DEFAULT NULL,
+  `valor_anterior` text,
+  `valor_nuevo` text,
+  `usuario` varchar(50) DEFAULT NULL,
+  `fecha_cambio` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id_historial`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `historial_cambios`
+--
+
+LOCK TABLES `historial_cambios` WRITE;
+/*!40000 ALTER TABLE `historial_cambios` DISABLE KEYS */;
+/*!40000 ALTER TABLE `historial_cambios` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `Metrajes`
 --
 
@@ -416,4 +446,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-26 18:20:48
+-- Dump completed on 2025-05-26 22:52:10
