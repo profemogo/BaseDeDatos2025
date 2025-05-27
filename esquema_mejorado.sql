@@ -389,9 +389,9 @@ CREATE TABLE `RegistroCompetencias` (
   `estado` enum('inscrito','confirmado','retirado','finalizado') DEFAULT 'inscrito',
   `posicion_final` int DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `nadador_id` (`nadador_id`),
+  UNIQUE KEY `unique_nadador_serie` (`nadador_id`,`serie_id`),
+  UNIQUE KEY `unique_carril_serie_estilo` (`serie_id`,`carril`),
   KEY `competencia_id` (`competencia_id`),
-  KEY `serie_id` (`serie_id`),
   CONSTRAINT `registrocompetencias_ibfk_1` FOREIGN KEY (`nadador_id`) REFERENCES `Nadadores` (`id`),
   CONSTRAINT `registrocompetencias_ibfk_2` FOREIGN KEY (`competencia_id`) REFERENCES `Competencias` (`id`),
   CONSTRAINT `registrocompetencias_ibfk_3` FOREIGN KEY (`serie_id`) REFERENCES `Series` (`id`)
@@ -612,6 +612,39 @@ DELIMITER ;
 /*!50003 SET character_set_client  = @saved_cs_client */ ;
 /*!50003 SET character_set_results = @saved_cs_results */ ;
 /*!50003 SET collation_connection  = @saved_col_connection */ ;
+
+--
+-- Temporary view structure for view `vista_nadadores_por_club`
+--
+
+DROP TABLE IF EXISTS `vista_nadadores_por_club`;
+/*!50001 DROP VIEW IF EXISTS `vista_nadadores_por_club`*/;
+SET @saved_cs_client     = @@character_set_client;
+/*!50503 SET character_set_client = utf8mb4 */;
+/*!50001 CREATE VIEW `vista_nadadores_por_club` AS SELECT 
+ 1 AS `nombre_club`,
+ 1 AS `ciudad_club`,
+ 1 AS `total_nadadores`,
+ 1 AS `lista_nadadores`*/;
+SET character_set_client = @saved_cs_client;
+
+--
+-- Final view structure for view `vista_nadadores_por_club`
+--
+
+/*!50001 DROP VIEW IF EXISTS `vista_nadadores_por_club`*/;
+/*!50001 SET @saved_cs_client          = @@character_set_client */;
+/*!50001 SET @saved_cs_results         = @@character_set_results */;
+/*!50001 SET @saved_col_connection     = @@collation_connection */;
+/*!50001 SET character_set_client      = utf8mb4 */;
+/*!50001 SET character_set_results     = utf8mb4 */;
+/*!50001 SET collation_connection      = utf8mb4_0900_ai_ci */;
+/*!50001 CREATE ALGORITHM=UNDEFINED */
+/*!50013 DEFINER=`skip-grants user`@`skip-grants host` SQL SECURITY DEFINER */
+/*!50001 VIEW `vista_nadadores_por_club` AS select `c`.`nombre` AS `nombre_club`,`c`.`ciudad` AS `ciudad_club`,count(`n`.`id`) AS `total_nadadores`,group_concat(concat(`n`.`nombre`,' ',`n`.`apellidos`,' (',timestampdiff(YEAR,`n`.`fecha_nacimiento`,curdate()),' años)') order by `n`.`apellidos` ASC,`n`.`nombre` ASC separator ', ') AS `lista_nadadores` from (`club` `c` left join `nadadores` `n` on((`c`.`id` = `n`.`club_id`))) group by `c`.`id`,`c`.`nombre`,`c`.`ciudad` order by `c`.`nombre` */;
+/*!50001 SET character_set_client      = @saved_cs_client */;
+/*!50001 SET character_set_results     = @saved_cs_results */;
+/*!50001 SET collation_connection      = @saved_col_connection */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -622,4 +655,4 @@ DELIMITER ;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-27  0:12:58
+-- Dump completed on 2025-05-27  0:49:39
