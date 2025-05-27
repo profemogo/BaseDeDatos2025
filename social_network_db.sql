@@ -1,9 +1,11 @@
+-- Tables
+
 -- Gender table (Defines available genders)
 -- Relationships:
 -- - Referenced by "User".
 CREATE TABLE Gender (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     is_active BOOLEAN DEFAULT TRUE
 );
 
@@ -27,7 +29,7 @@ CREATE TABLE User (
 -- - Referenced by "Post".
 CREATE TABLE PostType (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE
 );
@@ -37,7 +39,7 @@ CREATE TABLE PostType (
 -- - Referenced by "PostContent".
 CREATE TABLE ContentType (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE
 );
@@ -69,7 +71,8 @@ CREATE TABLE PostContent (
     media_url VARCHAR(255),
     order_index INT,
     FOREIGN KEY (post_id) REFERENCES Post(id) ON DELETE CASCADE,
-    FOREIGN KEY (content_type_id) REFERENCES ContentType(id) ON DELETE CASCADE
+    FOREIGN KEY (content_type_id) REFERENCES ContentType(id) ON DELETE CASCADE,
+    CONSTRAINT check_content_not_null CHECK (content IS NOT NULL OR media_url IS NOT NULL)
 );
 
 -- PostLike (Tracks post likes)
@@ -120,7 +123,8 @@ CREATE TABLE Chat (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100),
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    type ENUM('individual','group') NOT NULL DEFAULT 'individual'
+    type ENUM('individual','group') NOT NULL DEFAULT 'individual',
+    CONSTRAINT check_group_name CHECK (type = 'individual' OR name IS NOT NULL)
 );
 
 -- UserChat (Many-to-many relationship between "User" and "Chat")
@@ -141,7 +145,7 @@ CREATE TABLE UserChat (
 -- - Referenced by "Message".
 CREATE TABLE MessageType (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
+    name VARCHAR(50) NOT NULL UNIQUE,
     description VARCHAR(255),
     is_active BOOLEAN DEFAULT TRUE
 );
@@ -180,59 +184,3 @@ CREATE TABLE MessageReceptor (
     FOREIGN KEY (user_id) REFERENCES User(id) ON DELETE CASCADE,
     UNIQUE KEY unique_message_recipient (message_id, user_id)
 );
-
--- Indexes
-CREATE INDEX idx_message_chat_sent ON Message(chat_id, sent_at);
-CREATE INDEX idx_post_user_created ON Post(user_id, created_at);
-CREATE INDEX idx_comment_post_created ON Comment(post_id, created_at);
-CREATE INDEX idx_postcontent_post_order ON PostContent(post_id, order_index);
-CREATE INDEX idx_messagereceptor_user_read ON MessageReceptor(user_id, is_read);
-CREATE INDEX idx_user_username ON User(username);
-
--- Triggers
-DELIMITER //
-CREATE TRIGGER validate_chat_participant
-BEFORE INSERT ON MessageReceptor
-FOR EACH ROW
-BEGIN
-    DECLARE is_participant INT;
-
-    SELECT COUNT(*) INTO is_participant
-    FROM UserChat uc
-    JOIN Message m ON uc.chat_id = m.chat_id
-    WHERE uc.user_id = NEW.user_id
-    AND m.id = NEW.message_id;
-
-    IF is_participant = 0 THEN
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'The user is not a chat participant';
-    END IF;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER update_message_status
-BEFORE UPDATE ON MessageReceptor
-FOR EACH ROW
-BEGIN
-    IF NEW.is_read = TRUE AND OLD.is_read = FALSE THEN
-        SET NEW.read_at = NOW();
-    END IF;
-
-    IF NEW.delivered_at IS NOT NULL AND OLD.delivered_at IS NULL THEN
-        SET NEW.delivered_at = NOW();
-    END IF;
-END//
-DELIMITER ;
-
-DELIMITER //
-CREATE TRIGGER soft_delete_user
-BEFORE UPDATE ON User
-FOR EACH ROW
-BEGIN
-    IF NEW.is_active = FALSE AND OLD.is_active = TRUE THEN
-        UPDATE Post SET is_active = FALSE WHERE user_id = NEW.id;
-        UPDATE Comment SET is_active = FALSE WHERE user_id = NEW.id;
-    END IF;
-END//
-DELIMITER ;
