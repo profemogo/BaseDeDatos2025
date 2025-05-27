@@ -436,6 +436,107 @@ LOCK TABLES `Tiempos` WRITE;
 /*!40000 ALTER TABLE `Tiempos` DISABLE KEYS */;
 /*!40000 ALTER TABLE `Tiempos` ENABLE KEYS */;
 UNLOCK TABLES;
+/*!50003 SET @saved_cs_client      = @@character_set_client */ ;
+/*!50003 SET @saved_cs_results     = @@character_set_results */ ;
+/*!50003 SET @saved_col_connection = @@collation_connection */ ;
+/*!50003 SET character_set_client  = utf8mb4 */ ;
+/*!50003 SET character_set_results = utf8mb4 */ ;
+/*!50003 SET collation_connection  = utf8mb4_0900_ai_ci */ ;
+/*!50003 SET @saved_sql_mode       = @@sql_mode */ ;
+/*!50003 SET sql_mode              = 'ONLY_FULL_GROUP_BY,STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION' */ ;
+DELIMITER ;;
+/*!50003 CREATE*/ /*!50017 DEFINER=`skip-grants user`@`skip-grants host`*/ /*!50003 TRIGGER `trg_historial_tiempos` AFTER INSERT ON `tiempos` FOR EACH ROW BEGIN
+    DECLARE nadador_id_var BIGINT;
+    DECLARE competencia_id_var BIGINT;
+
+    -- Registrar el tiempo en el historial
+    INSERT INTO historial_cambios (
+        tabla_afectada,
+        id_registro,
+        tipo_cambio,
+        campo_modificado,
+        valor_anterior,
+        valor_nuevo,
+        usuario
+    ) VALUES (
+        'Tiempos',
+        NEW.id,
+        'INSERT',
+        'tiempo',
+        NULL,
+        NEW.tiempo,
+        CURRENT_USER()
+    );
+
+    -- Registrar el registro de competencia asociado
+    INSERT INTO historial_cambios (
+        tabla_afectada,
+        id_registro,
+        tipo_cambio,
+        campo_modificado,
+        valor_anterior,
+        valor_nuevo,
+        usuario
+    ) VALUES (
+        'Tiempos',
+        NEW.id,
+        'INSERT',
+        'registro_competencia_id',
+        NULL,
+        NEW.registro_competencia_id,
+        CURRENT_USER()
+    );
+
+    -- Si es un record, insertarlo en la tabla Records y registrarlo en el historial
+    IF NEW.es_record = 1 THEN
+        -- Obtener el nadador_id y competencia_id del registro de competencia
+        SELECT nadador_id, competencia_id 
+        INTO nadador_id_var, competencia_id_var
+        FROM RegistroCompetencias 
+        WHERE id = NEW.registro_competencia_id;
+
+        -- Insertar en la tabla Records
+        INSERT INTO Records (
+            nadador_id,
+            estilo_metraje_id,
+            tiempo,
+            fecha,
+            competencia_id,
+            tipo_record
+        ) VALUES (
+            nadador_id_var,
+            NEW.estilo_metraje_id,
+            NEW.tiempo,
+            CURRENT_DATE(),
+            competencia_id_var,
+            NEW.tipo_record
+        );
+
+        -- Registrar en el historial
+        INSERT INTO historial_cambios (
+            tabla_afectada,
+            id_registro,
+            tipo_cambio,
+            campo_modificado,
+            valor_anterior,
+            valor_nuevo,
+            usuario
+        ) VALUES (
+            'Records',
+            LAST_INSERT_ID(),
+            'INSERT',
+            'nuevo_record',
+            NULL,
+            CONCAT('Tiempo: ', NEW.tiempo, ', Tipo: ', NEW.tipo_record),
+            CURRENT_USER()
+        );
+    END IF;
+END */;;
+DELIMITER ;
+/*!50003 SET sql_mode              = @saved_sql_mode */ ;
+/*!50003 SET character_set_client  = @saved_cs_client */ ;
+/*!50003 SET character_set_results = @saved_cs_results */ ;
+/*!50003 SET collation_connection  = @saved_col_connection */ ;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -446,4 +547,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2025-05-26 22:52:10
+-- Dump completed on 2025-05-26 23:03:04
