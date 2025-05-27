@@ -1,6 +1,23 @@
-DROP DATABASE IF EXISTS ProjectNelsonVivas;
+
 create database if not exists ProjectNelsonVivas;
 use ProjectNelsonVivas;
+
+-- 
+-- DROP TABLES
+-- NOTE: THIS IS FOR TESTING PURPOSES ONLY
+-- =====================================================
+
+drop table if exists ClientProvider;
+drop table if exists Bank;
+drop table if exists PaymentMethod;
+drop table if exists AccountingAccount;
+drop table if exists SalesInvoice;
+drop table if exists PurchaseInvoice;
+drop table if exists InvoiceAccountingEntry;
+
+-- =====================================================
+-- CREATE TABLES
+-- =====================================================
 
 create table if not exists ClientProvider(
     created_at datetime not null default current_timestamp,
