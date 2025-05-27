@@ -83,6 +83,5 @@ Incluye **pruebas negativas** para comprobar que las restricciones, triggers y c
 ---
 
 **Autor:** Lorena Fernandez  
-**Licencia:** Uso académico y personal
 
 ---
