@@ -23,26 +23,26 @@ Incluye también la creación de **índices** y la inserción de datos base (tip
 
 ### 2. **funciones.sql**
 Contiene todas las **funciones almacenadas** útiles para reportes y análisis, por ejemplo:
-- `obtener_saldo_usuario`: Saldo neto de un usuario.
-- `total_gastos_usuario_periodo`: Total de gastos en un periodo.
-- `total_ingresos_usuario_periodo`: Total de ingresos en un periodo.
-- `porcentaje_avance_meta`: Porcentaje de avance de una meta financiera.
-- `cantidad_transacciones_mes`: Número de transacciones en un mes.
+- `ObtenerSaldoUsuario`: Saldo neto de un usuario.
+- `TotalGastosUsuarioPeriodo`: Total de gastos en un periodo.
+- `TotalIngresosUsuarioPeriodo`: Total de ingresos en un periodo.
+- `PorcentajeAvanceMeta`: Porcentaje de avance de una meta financiera.
+- `CantidadTransaccionesMes`: Número de transacciones en un mes.
 
 ---
 
 ### 3. **procedimientos.sql**
 Incluye **procedimientos almacenados** para operaciones complejas y atómicas:
-- `registrar_transaccion`: Inserta una transacción y su historial.
-- `transferir_entre_cuentas`: Realiza una transferencia entre cuentas del mismo usuario y registra ambos movimientos.
+- `RegistrarTransaccion`: Inserta una transacción y su historial.
+- `TransferirEntreCuentas`: Realiza una transferencia entre cuentas del mismo usuario y registra ambos movimientos.
+
 ---
 
 ### 4. **trigger.sql**
 Define los **triggers** (disparadores) para automatizar tareas y validar reglas de negocio:
-- Insertar y actualizar historial de transacciones.
-- Validar que la fecha de una meta sea futura.
-- Generar alertas cuando se supera un presupuesto.
-- Crea también un índice adicional para mejorar el rendimiento de alertas.
+- `DespuesInsertarTransaccion`: Registra en el historial al crear una transacción.
+- `DespuesActualizarTransaccion`: Registra en el historial al actualizar una transacción.
+- `DespuesInsertarTransaccionPresupuesto`: Valida y alerta cuando se supera un presupuesto.
 
 ---
 
@@ -79,16 +79,26 @@ Incluye procedimientos para:
 
 ### 7. **pruebas_validas.sql**
 Contiene **pruebas válidas** para verificar el correcto funcionamiento de la base de datos:
-- Consultas básicas de contenido.
-- Uso de vistas.
-- Pruebas de triggers, funciones y procedimientos con datos válidos.
+- Consultas básicas de contenido de tablas
+- Pruebas de vistas
+- Pruebas de triggers:
+  - Historial de transacciones
+  - Validación de presupuestos
+- Pruebas de funciones:
+  - Cálculo de saldos
+  - Cálculo de gastos e ingresos
+  - Seguimiento de metas
+- Pruebas de procedimientos:
+  - Registro de transacciones
+  - Transferencias entre cuentas
 
 ---
 
 ### 8. **pruebas_invalidas.sql**
 Incluye **pruebas negativas** para comprobar que las restricciones, triggers y claves foráneas funcionan correctamente:
-- Inserciones con datos inválidos (montos negativos, fechas pasadas, claves foráneas inexistentes, etc.).
-- Cada prueba debe fallar y ser rechazada por la base de datos.
+- Inserciones con datos inválidos (montos negativos, claves foráneas inexistentes, etc.)
+- Intentos de superar límites de presupuesto
+- Cada prueba debe fallar y ser rechazada por la base de datos
 
 ---
 

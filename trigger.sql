@@ -6,7 +6,7 @@
 
 -- Trigger para insertar registro en HistorialTransaccion al insertar una nueva transacción
 DELIMITER $$
-CREATE TRIGGER despues_insertar_transaccion
+CREATE TRIGGER DespuesInsertarTransaccion
 AFTER INSERT ON Transaccion
 FOR EACH ROW
 BEGIN
@@ -17,7 +17,7 @@ DELIMITER ;
 
 -- Trigger para actualizar registro en HistorialTransaccion al actualizar una transacción
 DELIMITER $$
-CREATE TRIGGER despues_actualizar_transaccion
+CREATE TRIGGER DespuesActualizarTransaccion
 AFTER UPDATE ON Transaccion
 FOR EACH ROW
 BEGIN
@@ -28,7 +28,7 @@ DELIMITER ;
 
 -- Trigger para validar presupuesto superado
 DELIMITER $$
-CREATE TRIGGER despues_insertar_transaccion_presupuesto
+CREATE TRIGGER DespuesInsertarTransaccionPresupuesto
 AFTER INSERT ON Transaccion
 FOR EACH ROW
 BEGIN

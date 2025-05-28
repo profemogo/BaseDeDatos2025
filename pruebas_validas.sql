@@ -148,6 +148,16 @@ UPDATE Transaccion SET descripcion = 'Compra de verduras y frutas' WHERE id = 1;
 -- Verifica el historial:
 SELECT * FROM HistorialTransaccion WHERE transaccion_id = 1 ORDER BY id DESC;
 
+-- Prueba del trigger de presupuesto
+CALL RegistrarTransaccion(
+    1, -- usuario_id
+    2, -- tipo_transaccion_id (Gasto)
+    1, -- cuenta_bancaria_id
+    500.00, -- monto (supera el presupuesto de Alimentación)
+    NOW(),
+    9, -- categoria_id (Alimentación)
+    'Gasto grande en supermercado'
+);
 
 -- Pruebas de funciones
 -- 1. Obtener el saldo total de un usuario
