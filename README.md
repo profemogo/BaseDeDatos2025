@@ -145,5 +145,5 @@ mysql -u tu_usuario -p swimmingProject_v1 < backup.sql
 - Los récords se registran automáticamente al detectar nuevos mejores tiempos
 - Todos los cambios en tiempos se registran en historial_cambios
 
-
+Hecho Por: Julio Cesar Vasquez Garcia
 
