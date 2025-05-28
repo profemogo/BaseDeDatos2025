@@ -2,6 +2,50 @@
 
 Base de datos diseñada para gestionar competencias de natación, incluyendo nadadores, clubes, competencias y registros de tiempos.
 
+## Estructura del Proyecto
+
+El proyecto está organizado los siguientes archivos SQL principales que deben ejecutarse en orden:
+
+1. `1_tablas.sql`: Estructura base de datos
+2. `2_triggers.sql`: Triggers del sistema
+3. `3_procedimientos.sql`: Procedimientos almacenados
+4. `4_vistas.sql`: Vistas del sistema
+
+## Instrucciones de Instalación
+
+### Requisitos Previos
+- MySQL 8.0 o superior
+- Cliente MySQL (mysql-client) o MySQL Workbench
+
+### Pasos de Instalación
+
+1. Clonar el repositorio:
+   ```bash
+   git clone [URL_DEL_REPOSITORIO]
+   cd [NOMBRE_DEL_DIRECTORIO]
+   ```
+
+2. Conectarse a MySQL:
+   ```bash
+   mysql -u tu_usuario -p
+   ```
+
+3. Ejecutar los archivos SQL en orden:
+   ```sql
+   source 1_tablas.sql
+   source 2_triggers.sql
+   source 3_procedimientos.sql
+   source 4_vistas.sql
+   ```
+
+   O desde la línea de comandos:
+   ```bash
+   mysql -u tu_usuario -p swimmingProject_v1 < 1_tablas.sql
+   mysql -u tu_usuario -p swimmingProject_v1 < 2_triggers.sql
+   mysql -u tu_usuario -p swimmingProject_v1 < 3_procedimientos.sql
+   mysql -u tu_usuario -p swimmingProject_v1 < 4_vistas.sql
+   ```
+
 ## Tablas Principales
 
 - **Nadadores**: Información personal (nombre, apellidos, fecha_nacimiento, género, club, categoría)
@@ -20,8 +64,8 @@ Base de datos diseñada para gestionar competencias de natación, incluyendo nad
 ## Restricciones Importantes
 
 En RegistroCompetencias:
-- Un nadador no puede estar en dos series diferentes al mismo tiempo (`unique_nadador_serie`)
-- Un carril no puede estar asignado dos veces en la misma serie (`unique_carril_serie_estilo`)
+- Un nadador no puede estar en dos series diferentes al mismo tiempo
+- Un carril no puede estar asignado dos veces en la misma serie
 
 ## Triggers
 
@@ -37,75 +81,69 @@ En RegistroCompetencias:
 ## Procedimientos Almacenados
 
 1. **actualizar_categorias_edad**:
-   - Actualiza las categorías de edad de todos los nadadores
-   - Uso: `CALL actualizar_categorias_edad();`
-   - Se recomienda ejecutar periódicamente para mantener categorías actualizadas
-
-2. **inscribir_nadador_competencia**:
-   - Procedimiento con control de transacciones para inscribir nadadores
-   - Validaciones:
-     * Verifica que el nadador exista
-     * Verifica que la competencia esté vigente
-     * Verifica categoría de edad y género
-     * Controla disponibilidad de carriles
-   - Uso: 
    ```sql
-   CALL inscribir_nadador_competencia(
+   CALL actualizar_categorias_edad();
+   ```
+   - Actualiza las categorías de edad de todos los nadadores
+   - Se recomienda ejecutar periódicamente
+
+2. **registrar_nadador_competencia**:
+   ```sql
+   CALL registrar_nadador_competencia(
        p_nadador_id,
        p_competencia_id,
        p_serie_id,
-       @mensaje
+       p_carril
    );
-   SELECT @mensaje;
    ```
+   - Inscribe un nadador en una competencia con validaciones completas
 
-## Vistas
+## Vista Principal
 
-1. **vista_nadadores_por_club**:
-   - Muestra nadadores agrupados por club
-   - Incluye: nombre del club, ciudad, total de nadadores, lista de nadadores con edades
-   - Uso: `SELECT * FROM vista_nadadores_por_club;`
-
-## Uso Básico
-
-### Inscribir Nadador en Competencia
-```sql
-CALL inscribir_nadador_competencia(
-    p_nadador_id,
-    p_competencia_id,
-    p_serie_id,
-    @mensaje
-);
-SELECT @mensaje;
-```
-
-### Actualizar Categorías de Edad
-```sql
-CALL actualizar_categorias_edad();
-```
-
-### Consultar Nadadores por Club
+**vista_nadadores_por_club**:
 ```sql
 SELECT * FROM vista_nadadores_por_club;
 ```
+- Muestra un resumen de nadadores por club
+- Incluye: nombre del club, ciudad, total de nadadores y lista detallada
 
-## Mantenimiento
+## Ejemplos de Uso
 
-- Los triggers mantienen automáticamente:
-  - Categorías de edad actualizadas
-  - Historial de cambios
-  - Registro de récords
+### 1. Registrar un Nadador en Competencia
+```sql
+CALL registrar_nadador_competencia(1, 1, 1, 4);
+-- Registra al nadador ID 1 en la competencia 1, serie 1, carril 4
+```
 
-- Procedimientos de mantenimiento:
-  - Ejecutar `actualizar_categorias_edad()` periódicamente
-  - Usar `inscribir_nadador_competencia()` para inscripciones
+### 2. Actualizar Categorías de Edad
+```sql
+CALL actualizar_categorias_edad();
+-- Actualiza todas las categorías de edad
+```
 
-- La vista facilita la consulta de nadadores por club
+### 3. Ver Resumen de Clubes
+```sql
+SELECT * FROM vista_nadadores_por_club;
+-- Muestra el resumen de todos los clubes con sus nadadores
+```
+
+## Mantenimiento y Respaldo
+
+### Respaldo de la Base de Datos
+```bash
+mysqldump -u tu_usuario -p swimmingProject_v1 > backup.sql
+```
+
+### Restauración
+```bash
+mysql -u tu_usuario -p swimmingProject_v1 < backup.sql
+```
 
 ## Notas Importantes
 
-- Las categorías de edad se actualizan automáticamente
-- Los récords se registran automáticamente cuando se detecta un nuevo mejor tiempo
-- Todos los cambios relacionados a tiempos quedan registrados en la tabla historial_cambios
+- Las categorías de edad se actualizan automáticamente al insertar nadadores
+- Los récords se registran automáticamente al detectar nuevos mejores tiempos
+- Todos los cambios en tiempos se registran en historial_cambios
+
 
 
