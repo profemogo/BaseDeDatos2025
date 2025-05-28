@@ -5,7 +5,7 @@
 
 -- Procedimiento para registrar una nueva transacción con historial 
 DELIMITER $$
-CREATE PROCEDURE registrar_transaccion(
+CREATE PROCEDURE RegistrarTransaccion(
     IN p_usuario_id INT,
     IN p_tipo_transaccion_id INT,
     IN p_cuenta_bancaria_id INT,
@@ -28,7 +28,7 @@ DELIMITER ;
 
 -- Procedimiento para transferir entre cuentas del mismo usuario
 DELIMITER $$
-CREATE PROCEDURE transferir_entre_cuentas(
+CREATE PROCEDURE TransferirEntreCuentas(
     IN p_usuario_id INT,
     IN p_cuenta_origen INT,
     IN p_cuenta_destino INT,
@@ -55,6 +55,3 @@ BEGIN
     COMMIT;
 END $$
 DELIMITER ;
-
--- Índice adicional para alertas (mejora de rendimiento)
-CREATE INDEX idx_alerta_usuario_categoria ON AlertaPresupuesto(usuario_id, categoria_id);

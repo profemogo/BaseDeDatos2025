@@ -7,7 +7,7 @@
 
 -- Función para obtener el saldo actual de un usuario
 DELIMITER $$
-CREATE FUNCTION obtener_saldo_usuario(uid INT) RETURNS DECIMAL(12,2)
+CREATE FUNCTION ObtenerSaldoUsuario(uid INT) RETURNS DECIMAL(12,2)
 DETERMINISTIC
 BEGIN
     DECLARE saldo DECIMAL(12,2);
@@ -23,7 +23,7 @@ DELIMITER ;
 
 -- Función: Total de gastos de un usuario en un periodo
 DELIMITER $$
-CREATE FUNCTION total_gastos_usuario_periodo(
+    CREATE FUNCTION TotalGastosUsuarioPeriodo(
     p_usuario_id INT,
     p_fecha_inicio DATE,
     p_fecha_fin DATE
@@ -43,7 +43,7 @@ DELIMITER ;
 
 -- Función: Total de ingresos de un usuario en un periodo
 DELIMITER $$
-CREATE FUNCTION total_ingresos_usuario_periodo(
+CREATE FUNCTION TotalIngresosUsuarioPeriodo(
     p_usuario_id INT,
     p_fecha_inicio DATE,
     p_fecha_fin DATE
@@ -65,7 +65,7 @@ DELIMITER ;
 
 DELIMITER $$
 
-CREATE FUNCTION porcentaje_avance_meta(p_meta_id INT) 
+CREATE FUNCTION PorcentajeAvanceMeta(p_meta_id INT) 
 RETURNS DECIMAL(5,2)
 DETERMINISTIC
 BEGIN
@@ -94,7 +94,7 @@ DELIMITER ;
 
 -- Función: Cantidad de transacciones de un usuario en un mes específico
 DELIMITER $$
-CREATE FUNCTION cantidad_transacciones_mes(
+CREATE FUNCTION CantidadTransaccionesMes(
     p_usuario_id INT,
     p_anio INT,
     p_mes INT

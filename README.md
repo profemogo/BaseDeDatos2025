@@ -35,8 +35,6 @@ Contiene todas las **funciones almacenadas** útiles para reportes y análisis, 
 Incluye **procedimientos almacenados** para operaciones complejas y atómicas:
 - `registrar_transaccion`: Inserta una transacción y su historial.
 - `transferir_entre_cuentas`: Realiza una transferencia entre cuentas del mismo usuario y registra ambos movimientos.
-- Crea también un índice adicional para mejorar el rendimiento de alertas.
-
 ---
 
 ### 4. **trigger.sql**
@@ -44,6 +42,7 @@ Define los **triggers** (disparadores) para automatizar tareas y validar reglas 
 - Insertar y actualizar historial de transacciones.
 - Validar que la fecha de una meta sea futura.
 - Generar alertas cuando se supera un presupuesto.
+- Crea también un índice adicional para mejorar el rendimiento de alertas.
 
 ---
 

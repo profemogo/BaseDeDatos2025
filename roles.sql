@@ -18,13 +18,11 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON Transaccion TO 'usuario_role';
 GRANT SELECT, INSERT, UPDATE, DELETE ON Presupuesto TO 'usuario_role';
 GRANT SELECT, INSERT, UPDATE, DELETE ON Meta TO 'usuario_role';
 GRANT SELECT, INSERT, UPDATE, DELETE ON CuentaBancaria TO 'usuario_role';
--- Solo lectura en tablas de configuración
 GRANT SELECT ON Categoria TO 'usuario_role';
 GRANT SELECT ON TipoTransaccion TO 'usuario_role';
 GRANT SELECT ON HistorialTransaccion TO 'usuario_role';
 
 -- Asignar permisos al rol de auditor
--- Solo permisos de lectura en todas las tablas
 GRANT SELECT ON Usuario TO 'auditor_role';
 GRANT SELECT ON Transaccion TO 'auditor_role';
 GRANT SELECT ON Presupuesto TO 'auditor_role';
