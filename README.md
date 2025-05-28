@@ -24,17 +24,29 @@ La base de datos se compone de las siguientes tablas principales, cada una de la
 
 ## Implementación en MySQL
 Esta base de datos ha sido implementada utilizando **MySQL**, un sistema de gestión de bases de datos relacional (RDBMS) de código abierto. El archivo `.sql` incluido en este repositorio contiene el esquema completo de la base de datos, incluyendo las definiciones de las tablas, las relaciones entre ellas.
+
 ## Cómo Utilizar la Base de Datos
 Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
+
 1.  **Instalar MySQL:** Si aún no tienes MySQL instalado, descárgalo e instálalo desde el sitio web oficial de MySQL ([https://www.mysql.com/](https://www.mysql.com/)).
-2.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una nueva base de datos donde se importará el esquema. Puedes hacerlo utilizando la línea de comandos o una herramienta gráfica como MySQL Workbench:
-    ```sql
-    CREATE DATABASE HistoriasMedicas;
-    ```
-3.  **Importar el Esquema:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:
+
+2.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema. Puedes hacerlo utilizando la línea de comandos o una herramienta gráfica como MySQL Workbench
     ```bash
-    mysql -u <usuario> -p HistoriasMedicas < HistoriasMedicas.sql
+    mysql -u root -p -e "CREATE DATABASE <Nombre de tu base de datos>;"
+    ```
+
+3.  **Cargar la estructura:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:
+    ```bash
+    mysql -u <usuario> -p <Nombre de tu base de datos> < db/tablas.sql
+    mysql -u <usuario> -p <Nombre de tu base de datos> < db/valores_defecto.sql
+    mysql -u <usuario> -p <Nombre de tu base de datos> < db/vistas.sql
     ```
     Reemplaza `<usuario>` con tu nombre de usuario de MySQL. Se te pedirá que introduzcas la contraseña.
-4.  **Configurar la Conexión:** Configura tu aplicación o sistema de gestión de historias médicas para que se conecte a la base de datos MySQL utilizando las credenciales adecuadas.
+    Reemplaza `<Nombre de tu base de datos>` con el nombre de la base de datos que creaste.
+
+4.  **Cargar datos de Prueba (opcional):** 
+    ```bash
+    mysql -u <usuario> -p HistoriasMedicas < valores_pruebas.sql
+    ```
+
 5.  **Explorar y Utilizar:** Una vez que la base de datos esté configurada, puedes comenzar a explorar las tablas, insertar datos y realizar consultas para gestionar la información de las pacientes.
