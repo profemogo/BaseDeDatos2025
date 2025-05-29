@@ -7,7 +7,7 @@ SELECT
     p.nombre,
     p.apellido,
     p.fecha_nacimiento,
-    TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE()) AS edad,
+    CalcularEdad(p.fecha_nacimiento) AS edad,
     ec.descripcion AS estado_civil,
     GROUP_CONCAT(t.numero SEPARATOR ', ') AS telefonos,
     p.direccion
@@ -27,8 +27,8 @@ CREATE VIEW VistaPacienteCompleto AS
 SELECT 
     p.nombre,
     p.apellido,
-    p.documento AS cedula,
-    TIMESTAMPDIFF(YEAR, p.fecha_nacimiento, CURDATE()) AS edad,
+    p.documento AS documento,
+    CalcularEdad(p.fecha_nacimiento) AS edad,
     ec.descripcion AS estado_civil,
     p.estudio AS profesion_ocupacion,
     p.direccion,

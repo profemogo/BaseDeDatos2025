@@ -30,19 +30,28 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
 
 1.  **Instalar MySQL:** Si aún no tienes MySQL instalado, descárgalo e instálalo desde el sitio web oficial de MySQL ([https://www.mysql.com/](https://www.mysql.com/)).
 
-2.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema. Puedes hacerlo utilizando la línea de comandos o una herramienta gráfica como MySQL Workbench
+2.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema.
+    Si ya tienes una base de datos con el nombre **HistoriasMedicas**, elimininala previamente con (PRECAUCION, ESTE COMANDO ELIMINARA TODO EL CONTENIDO DE LA BASE DE DATOS CON NOMBRE HistoriasMedicas):
     ```bash
-    mysql -u root -p -e "CREATE DATABASE <Nombre de tu base de datos>;"
+    mysql -u root -p -e "DROP DATABASE HistoriasMedicas;"
+    ```
+    Ahora si puedes crear la base de datos con:
+    ```bash
+    mysql -u root -p -e "CREATE DATABASE < HistoriasMedicas;"
     ```
 
 3.  **Cargar la estructura:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:
     ```bash
-    mysql -u <usuario> -p <Nombre de tu base de datos> < db/tablas.sql
-    mysql -u <usuario> -p <Nombre de tu base de datos> < db/valores_defecto.sql
-    mysql -u <usuario> -p <Nombre de tu base de datos> < db/vistas.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/tablas.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/valores_defecto.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/funciones_procedimientos.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/vistas.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/roles.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/indices.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/transacciones.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/triggers.sql
     ```
     Reemplaza `<usuario>` con tu nombre de usuario de MySQL. Se te pedirá que introduzcas la contraseña.
-    Reemplaza `<Nombre de tu base de datos>` con el nombre de la base de datos que creaste.
 
 4.  **Cargar datos de Prueba (opcional):** 
     ```bash
