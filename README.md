@@ -30,7 +30,9 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
 
 1.  **Instalar MySQL:** Si aún no tienes MySQL instalado, descárgalo e instálalo desde el sitio web oficial de MySQL ([https://www.mysql.com/](https://www.mysql.com/)).
 
-2.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema.
+2. **Clonar este Repositorio**
+ 
+3.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema.
     Si ya tienes una base de datos con el nombre **HistoriasMedicas**, elimininala previamente con (PRECAUCION, ESTE COMANDO ELIMINARA TODO EL CONTENIDO DE LA BASE DE DATOS CON NOMBRE HistoriasMedicas):
     ```bash
     mysql -u root -p -e "DROP DATABASE HistoriasMedicas;"
@@ -40,7 +42,7 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
     mysql -u root -p -e "CREATE DATABASE < HistoriasMedicas;"
     ```
 
-3.  **Cargar la estructura:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:
+4.  **Cargar la estructura:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:
     ```bash
     mysql -u <usuario> -p HistoriasMedicas < db/tablas.sql
     mysql -u <usuario> -p HistoriasMedicas < db/valores_defecto.sql
@@ -53,9 +55,9 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
     ```
     Reemplaza `<usuario>` con tu nombre de usuario de MySQL. Se te pedirá que introduzcas la contraseña.
 
-4.  **Cargar datos de Prueba (opcional):** 
+5.  **Cargar datos de Prueba (opcional):** 
     ```bash
     mysql -u <usuario> -p HistoriasMedicas < valores_pruebas.sql
     ```
 
-5.  **Explorar y Utilizar:** Una vez que la base de datos esté configurada, puedes comenzar a explorar las tablas, insertar datos y realizar consultas para gestionar la información de las pacientes.
+6.  **Explorar y Utilizar:** Una vez que la base de datos esté configurada, puedes comenzar a explorar las tablas, insertar datos y realizar consultas para gestionar la información de las pacientes.
