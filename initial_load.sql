@@ -1,20 +1,20 @@
 -- =====================================================
--- CARGA INICIAL DE DATOS - PROYECTO NELSON VIVAS
+-- INITIAL DATA LOAD - NELSON VIVAS PROJECT
 -- =====================================================
--- Archivo: initial_load.sql
--- Propósito: Cargar datos de ejemplo para comenzar a trabajar
--- Orden de ejecución: 6to (después de users.sql)
+-- File: initial_load.sql
+-- Purpose: Load sample data to start working
+-- Execution order: 6th (after users.sql)
 -- =====================================================
 
 USE ProjectNelsonVivas;
 
 -- =====================================================
--- CARGA DE MÉTODOS DE PAGO
+-- PAYMENT METHODS LOAD
 -- =====================================================
 
 INSERT INTO PaymentMethod (PaymentMethodName, Description, IsActive) VALUES
 ('Efectivo', 'Pago en efectivo', TRUE),
-('Transferencia Bancaria', 'Transferencia electrónica entre cuentas bancarias', TRUE),
+('Transferencia Bancaria', 'Transferencia electrónica between bank accounts', TRUE),
 ('Cheque', 'Pago mediante cheque bancario', TRUE),
 ('Tarjeta de Débito', 'Pago con tarjeta de débito', TRUE),
 ('Tarjeta de Crédito', 'Pago con tarjeta de crédito', TRUE),
@@ -25,7 +25,7 @@ INSERT INTO PaymentMethod (PaymentMethodName, Description, IsActive) VALUES
 ('Criptomonedas', 'Pago con monedas digitales (Bitcoin, USDT, etc.)', FALSE);
 
 -- =====================================================
--- CARGA DE BANCOS
+-- BANKS LOAD
 -- =====================================================
 
 INSERT INTO Bank (BankName, AccountNumber, AccountType, Balance, BankCredentials, IsActive) VALUES
@@ -39,11 +39,11 @@ INSERT INTO Bank (BankName, AccountNumber, AccountType, Balance, BankCredentials
 ('Banco Exterior', '01150666777888999000', 'Ahorro', 60000.00, AES_ENCRYPT('exterior_user:ext2025', 'encryption_key_2025'), FALSE);
 
 -- =====================================================
--- CARGA DE CUENTAS CONTABLES
+-- ACCOUNTING ACCOUNTS LOAD
 -- =====================================================
 
 INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) VALUES
--- Cuentas de Activo
+-- Asset Accounts
 ('1101', 'Caja', 'Activo', TRUE),
 ('1102', 'Banco de Venezuela', 'Activo', TRUE),
 ('1103', 'Banesco', 'Activo', TRUE),
@@ -55,7 +55,7 @@ INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) 
 ('1401', 'Mobiliario y Equipos', 'Activo', TRUE),
 ('1402', 'Equipos de Computación', 'Activo', TRUE),
 
--- Cuentas de Pasivo
+-- Liability Accounts
 ('2101', 'Cuentas por Pagar Proveedores', 'Pasivo', TRUE),
 ('2102', 'Documentos por Pagar', 'Pasivo', TRUE),
 ('2201', 'IVA por Pagar', 'Pasivo', TRUE),
@@ -63,18 +63,18 @@ INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) 
 ('2203', 'IVA Retenido por Pagar', 'Pasivo', TRUE),
 ('2301', 'Préstamos Bancarios', 'Pasivo', TRUE),
 
--- Cuentas de Patrimonio
+-- Equity Accounts
 ('3101', 'Capital Social', 'Patrimonio', TRUE),
 ('3201', 'Utilidades Retenidas', 'Patrimonio', TRUE),
 ('3301', 'Utilidad del Ejercicio', 'Patrimonio', TRUE),
 
--- Cuentas de Ingresos
+-- Income Accounts
 ('4101', 'Ventas de Mercancías', 'Ingreso', TRUE),
 ('4102', 'Ventas de Servicios', 'Ingreso', TRUE),
 ('4201', 'Ingresos Financieros', 'Ingreso', TRUE),
 ('4301', 'Otros Ingresos', 'Ingreso', TRUE),
 
--- Cuentas de Gastos
+-- Expense Accounts
 ('5101', 'Costo de Ventas', 'Gasto', TRUE),
 ('5201', 'Gastos de Administración', 'Gasto', TRUE),
 ('5202', 'Gastos de Ventas', 'Gasto', TRUE),
@@ -85,10 +85,10 @@ INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) 
 ('5404', 'Mantenimiento y Reparaciones', 'Gasto', TRUE);
 
 -- =====================================================
--- CARGA DE CLIENTES Y PROVEEDORES DE EJEMPLO
+-- SAMPLE CLIENTS AND SUPPLIERS LOAD
 -- =====================================================
 
--- Clientes
+-- Clients
 CALL Sp_CreateClientProvider(
     'J-12345678-9',
     'Empresa ABC, C.A.',
@@ -96,7 +96,7 @@ CALL Sp_CreateClientProvider(
     'Av. Principal, Centro Comercial ABC, Local 15, Caracas',
     '0212-555-0101',
     'ventas@empresaabc.com',
-    3.00,  -- 3% de retención ISLR
+    3.00,  -- 3% of ISLR retention
     TRUE
 );
 
@@ -107,7 +107,7 @@ CALL Sp_CreateClientProvider(
     'Calle Comercial, Torre XYZ, Piso 10, Valencia',
     '0241-555-0202',
     'compras@corpxyz.com',
-    2.00,  -- 2% de retención ISLR
+    2.00,  -- 2% of ISLR retention
     TRUE
 );
 
@@ -118,11 +118,11 @@ CALL Sp_CreateClientProvider(
     'Urbanización Los Rosales, Casa 25, Maracay',
     '0243-555-0303',
     'maria.gonzalez@email.com',
-    0.00,  -- Sin retención (persona natural)
+    0.00,  -- No retention (natural person)
     TRUE
 );
 
--- Proveedores
+-- Suppliers
 CALL Sp_CreateClientProvider(
     'J-55667788-0',
     'Distribuidora Nacional, C.A.',
@@ -130,7 +130,7 @@ CALL Sp_CreateClientProvider(
     'Zona Industrial, Galpón 8, Sector B, Caracas',
     '0212-555-0404',
     'facturacion@distnacional.com',
-    1.00,  -- 1% de retención ISLR
+    1.00,  -- 1% of ISLR retention
     TRUE
 );
 
@@ -141,7 +141,7 @@ CALL Sp_CreateClientProvider(
     'Centro Empresarial, Torre C, Oficina 502, Barquisimeto',
     '0251-555-0505',
     'administracion@servicentro.com',
-    2.00,  -- 2% de retención ISLR
+    2.00,  -- 2% of ISLR retention
     TRUE
 );
 
@@ -152,15 +152,15 @@ CALL Sp_CreateClientProvider(
     'Av. Libertador, Edificio Comercial, Local 12, Maracaibo',
     '0261-555-0606',
     'carlos.rodriguez@freelancer.com',
-    0.00,  -- Sin retención (persona natural)
+    0.00,  -- No retention (natural person)
     TRUE
 );
 
 -- =====================================================
--- CARGA DE FACTURAS DE EJEMPLO
+-- SAMPLE INVOICES LOAD
 -- =====================================================
 
--- Facturas de Venta
+-- Sales Invoices
 CALL Sp_RecordSalesInvoice(
     1,  -- ClientProviderID (Empresa ABC)
     'FAC-001-2025',
@@ -197,7 +197,7 @@ CALL Sp_RecordSalesInvoice(
     'Venta al detal - productos de consumo'
 );
 
--- Facturas de Compra
+-- Purchase Invoices
 CALL Sp_RecordPurchaseInvoice(
     4,  -- ClientProviderID (Distribuidora Nacional)
     'COMP-001-2025',
@@ -223,10 +223,10 @@ CALL Sp_RecordPurchaseInvoice(
 );
 
 -- =====================================================
--- CARGA DE ASIENTOS CONTABLES DE EJEMPLO
+-- SAMPLE ACCOUNTING ENTRIES LOAD
 -- =====================================================
 
--- Asiento por venta FAC-001-2025
+-- Entry for sale FAC-001-2025
 CALL Sp_CreateInvoiceAccountingEntry(
     1,  -- SalesInvoiceID
     NULL,  -- PurchaseInvoiceID
@@ -234,7 +234,7 @@ CALL Sp_CreateInvoiceAccountingEntry(
     'Registro de venta FAC-001-2025 - Empresa ABC'
 );
 
--- Asiento por compra COMP-001-2025
+-- Entry for purchase COMP-001-2025
 CALL Sp_CreateInvoiceAccountingEntry(
     NULL,  -- SalesInvoiceID
     1,  -- PurchaseInvoiceID
@@ -243,117 +243,117 @@ CALL Sp_CreateInvoiceAccountingEntry(
 );
 
 -- =====================================================
--- CARGA DE RETENCIONES DE EJEMPLO
+-- SAMPLE RETENTIONS LOAD
 -- =====================================================
 
--- Retención ISLR sobre venta a Empresa ABC (3%)
+-- ISLR retention on sale to ABC Company (3%)
 CALL Sp_RecordRetention(
     1,  -- SalesInvoiceID
     NULL,  -- PurchaseInvoiceID
     'ISLR',
     3.00,  -- 3%
-    1500.00,  -- 3% de 50,000
+    1500.00,  -- 3% of 50,000
     '2025-01-15',
     'Retención ISLR 3% sobre venta FAC-001-2025'
 );
 
--- Retención ISLR sobre compra a Distribuidora Nacional (1%)
+-- ISLR retention on purchase from National Distributor (1%)
 CALL Sp_RecordRetention(
     NULL,  -- SalesInvoiceID
     1,  -- PurchaseInvoiceID
     'ISLR',
     1.00,  -- 1%
-    750.00,  -- 1% de 75,000
+    750.00,  -- 1% of 75,000
     '2025-01-10',
     'Retención ISLR 1% sobre compra COMP-001-2025'
 );
 
 -- =====================================================
--- VERIFICACIÓN DE DATOS CARGADOS
+-- VERIFICATION OF LOADED DATA
 -- =====================================================
 
--- Mostrar resumen de datos cargados
-SELECT 'RESUMEN DE CARGA INICIAL DE DATOS' AS mensaje;
+-- Show summary of loaded data
+SELECT 'INITIAL DATA LOAD SUMMARY' AS message;
 
 SELECT 
-    'Métodos de Pago' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Métodos de Pago' AS table,
+    COUNT(*) AS records_loaded
 FROM PaymentMethod
 WHERE IsActive = TRUE
 
 UNION ALL
 
 SELECT 
-    'Bancos' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Bancos' AS table,
+    COUNT(*) AS records_loaded
 FROM Bank
 WHERE IsActive = TRUE
 
 UNION ALL
 
 SELECT 
-    'Cuentas Contables' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Cuentas Contables' AS table,
+    COUNT(*) AS records_loaded
 FROM AccountingAccount
 WHERE IsActive = TRUE
 
 UNION ALL
 
 SELECT 
-    'Clientes/Proveedores' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Clientes/Proveedores' AS table,
+    COUNT(*) AS records_loaded
 FROM ClientProvider
 WHERE IsActive = TRUE
 
 UNION ALL
 
 SELECT 
-    'Facturas de Venta' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Facturas de Venta' AS table,
+    COUNT(*) AS records_loaded
 FROM SalesInvoice
 
 UNION ALL
 
 SELECT 
-    'Facturas de Compra' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Facturas de Compra' AS table,
+    COUNT(*) AS records_loaded
 FROM PurchaseInvoice
 
 UNION ALL
 
 SELECT 
-    'Asientos Contables' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Asientos Contables' AS table,
+    COUNT(*) AS records_loaded
 FROM InvoiceAccountingEntry
 
 UNION ALL
 
 SELECT 
-    'Retenciones' AS tabla,
-    COUNT(*) AS registros_cargados
+    'Retenciones' AS table,
+    COUNT(*) AS records_loaded
 FROM Retention;
 
 -- =====================================================
--- CONSULTAS DE VERIFICACIÓN DETALLADAS
+-- DETAILED VERIFICATION QUERIES
 -- =====================================================
 
--- Mostrar saldos bancarios actuales
-SELECT 'SALDOS BANCARIOS ACTUALES' AS titulo;
+-- Show current bank balances
+SELECT 'CURRENT BANK BALANCES' AS title;
 SELECT * FROM Vw_BankBalances;
 
--- Mostrar cuentas por cobrar pendientes
-SELECT 'CUENTAS POR COBRAR PENDIENTES' AS titulo;
+-- Show pending accounts receivable
+SELECT 'PENDING ACCOUNTS RECEIVABLE' AS title;
 SELECT * FROM Vw_PendingReceivables;
 
--- Mostrar asientos contables generados
-SELECT 'ASIENTOS CONTABLES GENERADOS' AS titulo;
+-- Show generated accounting entries
+SELECT 'GENERATED ACCOUNTING ENTRIES' AS title;
 SELECT * FROM Vw_InvoiceJournalEntries;
 
 -- =====================================================
--- DATOS ADICIONALES PARA PRUEBAS
+-- ADDITIONAL TEST DATA
 -- =====================================================
 
--- Crear algunos bancos adicionales para pruebas
+-- Create some additional banks for testing
 CALL Sp_CreateBank(
     'Banco Digital Ejemplo',
     '01990123456789012345',
@@ -362,13 +362,13 @@ CALL Sp_CreateBank(
     'digital_user:digital2025'
 );
 
--- Crear métodos de pago adicionales
+-- Create additional payment methods
 INSERT INTO PaymentMethod (PaymentMethodName, Description, IsActive) VALUES
 ('Binance Pay', 'Pago mediante Binance Pay', TRUE),
 ('Uphold', 'Transferencia mediante Uphold', TRUE),
 ('Reserve', 'Pago con Reserve App', TRUE);
 
--- Crear cuentas contables adicionales específicas
+-- Create specific additional accounting accounts
 INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) VALUES
 ('1106', 'Banco Digital Ejemplo', 'Activo', TRUE),
 ('4401', 'Ingresos por Servicios Digitales', 'Ingreso', TRUE),
@@ -376,14 +376,14 @@ INSERT INTO AccountingAccount (AccountCode, AccountName, AccountType, IsActive) 
 ('5502', 'Comisiones Bancarias', 'Gasto', TRUE);
 
 -- =====================================================
--- MENSAJE FINAL
+-- FINAL MESSAGE
 -- =====================================================
 
 SELECT 
-    'CARGA INICIAL COMPLETADA EXITOSAMENTE' AS mensaje,
-    NOW() AS fecha_carga,
-    'El sistema está listo para usar con datos de ejemplo' AS estado;
+    'INITIAL LOAD COMPLETED SUCCESSFULLY' AS message,
+    NOW() AS load_date,
+    'The system is ready to use with sample data' AS status;
 
 -- =====================================================
--- FIN DEL ARCHIVO initial_load.sql
+-- END OF FILE initial_load.sql
 -- =====================================================
