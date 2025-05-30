@@ -83,3 +83,83 @@ FLUSH PRIVILEGES;
 INSERT INTO users (name, email, password, role)
 VALUES ('Administrador BTM Studio', 'btmstudio@mail.com', 'byeliasmontilla', 'administrador')
 ON DUPLICATE KEY UPDATE email=email;
+
+-- Enviar notificación al vendedor cuando alguien solicita un repuesto
+DELIMITER //
+CREATE TRIGGER after_solicitud_insert
+AFTER INSERT ON solicitudes
+FOR EACH ROW
+BEGIN
+    DECLARE vendedor INT;
+    SELECT vendedor_id INTO vendedor FROM repuestos WHERE id = NEW.repuesto_id;
+    
+    INSERT INTO mensajes (emisor_id, receptor_id, contenido)
+    VALUES (NEW.comprador_id, vendedor, CONCAT('Nueva solicitud para el repuesto ID ', NEW.repuesto_id));
+END;
+//
+DELIMITER ;
+
+-- Transacción para finalizar una venta
+DELIMITER //
+
+CREATE PROCEDURE finalizar_venta(IN solicitud_id INT)
+BEGIN
+    DECLARE cantidad_solicitada INT;
+    DECLARE repuesto_id_val INT;
+    DECLARE stock_actual INT;
+    DECLARE comprador_id_val INT;
+    DECLARE vendedor_id_val INT;
+
+    -- Paso 1: Obtener datos de la solicitud (si está pendiente)
+    SELECT repuesto_id, cantidad, comprador_id
+    INTO repuesto_id_val, cantidad_solicitada, comprador_id_val
+    FROM solicitudes
+    WHERE id = solicitud_id AND estado = 'pendiente';
+
+    -- Paso 2: Obtener stock actual y vendedor
+    SELECT stock, vendedor_id
+    INTO stock_actual, vendedor_id_val
+    FROM repuestos
+    WHERE id = repuesto_id_val;
+
+    -- Paso 3: Verificar si hay stock suficiente
+    IF stock_actual >= cantidad_solicitada THEN
+
+        -- Iniciar transacción
+        START TRANSACTION;
+
+        -- Descontar stock
+        UPDATE repuestos
+        SET stock = stock - cantidad_solicitada
+        WHERE id = repuesto_id_val;
+
+        -- Marcar la solicitud como aprobada
+        UPDATE solicitudes
+        SET estado = 'aprobado'
+        WHERE id = solicitud_id;
+
+        -- Confirmar la transacción
+        COMMIT;
+
+        -- Mostrar IDs involucrados
+        SELECT 
+            repuesto_id_val AS repuesto_id,
+            vendedor_id_val AS vendedor_id,
+            comprador_id_val AS comprador_id;
+
+    ELSE
+        -- Cancelar si no hay stock suficiente
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Stock insuficiente para completar la venta.';
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+-- Índices adicionales para acelerar búsquedas frecuentes
+CREATE INDEX idx_users_email ON users(email);
+CREATE INDEX idx_repuestos_vendedor ON repuestos(vendedor_id);
+CREATE INDEX idx_repuestos_categoria ON repuestos(categoria_id);
+CREATE INDEX idx_solicitudes_comprador ON solicitudes(comprador_id);
+CREATE INDEX idx_mensajes_receptor ON mensajes(receptor_id);

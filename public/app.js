@@ -1,27 +1,31 @@
 async function login() {
-    const email = document.getElementById('email').value;
-    const password = document.getElementById('password').value;
-  
-    const res = await fetch('/api/auth/login', {
-      method: 'POST',
-      credentials: 'include',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
-    });
-  
-    const data = await res.json();
-    if (data.user) {
-      sessionStorage.setItem('userRole', data.user.role);
-      mostrarPanelPorRol(data.user.role);
-      document.querySelector('.container').style.display = 'none';
-      document.getElementById('clientePanel').style.display = 'block';
-      document.getElementById('rolInfo').textContent = `Rol: ${data.user.role}`;
-    } else {
-      alert('Login incorrecto');
-    }
+  const email = document.getElementById('email').value;
+  const password = document.getElementById('password').value;
+
+  const res = await fetch('/api/auth/login', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+
+  const data = await res.json();
+
+  if (data.user) {
+    sessionStorage.setItem('userRole', data.user.role);
+
+    document.querySelector('.container').style.display = 'none';
+    //document.querySelector('.adminPanel').style.display = 'none';
+    mostrarPanelPorRol(data.user.role);
+
+    document.getElementById('rolInfo').textContent = `Rol: ${data.user.role}`;
+  } else {
+    alert('Login incorrecto');
   }
+}
   
   function mostrarPanelPorRol(role) {
+    console.log(`Mostrando panel para el rol: ${role}`);
     document.getElementById('clientePanel').style.display = role === 'cliente' ? 'block' : 'none';
     document.getElementById('vendedorPanel').style.display = role === 'vendedor' ? 'block' : 'none';
     document.getElementById('adminPanel').style.display = role === 'administrador' ? 'block' : 'none';
@@ -73,12 +77,51 @@ async function login() {
     });
   }
   
-  // Si ya está logueado
- // const savedRole = sessionStorage.getItem('userRole');
-//   if (savedRole) {
-//     mostrarPanelPorRol(savedRole);
-//     document.querySelector('.container').style.display = 'none';
-//     document.getElementById('clientePanel').style.display = 'block';
-//     document.getElementById('rolInfo').textContent = `Rol: ${savedRole}`;
-//   }
+  app.post('/api/admin/crear-vendedor', async (req, res) => {
+    const { name, email, password } = req.body;
   
+    try {
+      await connection.execute(
+        'INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, "vendedor")',
+        [name, email, password]
+      );
+      res.json({ message: 'Vendedor creado correctamente' });
+    } catch (err) {
+      if (err.code === 'ER_DUP_ENTRY') {
+        res.json({ message: 'El correo ya está registrado' });
+      } else {
+        console.error(err);
+        res.status(500).json({ message: 'Error al crear vendedor' });
+      }
+    }
+  });
+  
+  
+function crearVendedor() {
+  document.getElementById('modalCrearVendedor').style.display = 'flex';
+}
+
+function cerrarModal() {
+  document.getElementById('modalCrearVendedor').style.display = 'none';
+  document.getElementById('crearVendedorResultado').textContent = '';
+}
+
+async function enviarCrearVendedor() {
+  const name = document.getElementById('vendedorNombre').value;
+  const email = document.getElementById('vendedorEmail').value;
+  const password = document.getElementById('vendedorPassword').value;
+
+  const res = await fetch('/api/admin/crear-vendedor', {
+    method: 'POST',
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, email, password })
+  });
+
+  const data = await res.json();
+  document.getElementById('crearVendedorResultado').textContent = data.message;
+
+  if (data.message.includes('creado')) {
+    setTimeout(() => cerrarModal(), 1500);
+  }
+}

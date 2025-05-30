@@ -92,3 +92,48 @@
       width: 100%;
     }
   }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+  }
+
+  .admin-section {
+    border: 1px solid #ccc;
+    padding: 16px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    background-color: #f9f9f9;
+  }
+
+  .admin-section h3 {
+    margin-top: 0;
+  }
+
+  .admin-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+
+  .admin-section input {
+    margin: 6px 0;
+    padding: 6px;
+    width: 250px;
+    display: block;
+  }
+
+  .admin-section ul {
+    list-style: disc;
+    padding-left: 20px;
+  }
+
+  .admin-section button {
+    padding: 6px 12px;
+  }

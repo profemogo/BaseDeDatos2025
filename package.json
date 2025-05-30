@@ -1,7 +1,7 @@
 {
   "name": "repuestos-merida-admin",
   "version": "1.0.0",
-  "description": "Sistema de gesti\u00f3n de repuestos con control de usuarios y frontend integrado",
+  "description": "Sistema de gestión de repuestos con control de usuarios y frontend integrado",
   "main": "index.js",
   "type": "module",
   "scripts": {
