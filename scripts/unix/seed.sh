@@ -21,3 +21,9 @@ DB_PASSWORD=$3
 
 # Seed the currencies
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/currencies.sql
+
+# Seed the category groups
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/categories-group.sql
+
+# Seed the categories
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/categories.sql

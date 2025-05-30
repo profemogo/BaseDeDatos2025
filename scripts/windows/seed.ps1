@@ -20,3 +20,9 @@ param(
 
 # Seed the currencies
 mysql -u $DbUser -p$DbPassword $DbName < .\seeds\currencies.sql
+
+# Seed the category groups
+mysql -u $DbUser -p$DbPassword $DbName < .\seeds\categories-group.sql
+
+# Seed the categories
+mysql -u $DbUser -p$DbPassword $DbName < .\seeds\categories.sql
