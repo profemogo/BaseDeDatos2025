@@ -16,7 +16,7 @@ CREATE TRIGGER trigger_before_insert_user
 BEFORE INSERT ON User
 FOR EACH ROW
 BEGIN
-    SET NEW.password_hash = SHA2(CONCAT(NEW.password_hash, 'my_secret_encryption_key'), 256);
+    SET NEW.password_hash = SHA2(CONCAT(NEW.password_hash, 'my_secret_key'), 256);
 END$$
 DELIMITER ;
 
