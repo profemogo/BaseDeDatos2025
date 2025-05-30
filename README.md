@@ -36,7 +36,7 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
     ```
     Cambiate a esta rama
     ```bash
-    git switch ANDRE_MIRANDA_2025_01
+    git switch ANDREA_MIRANDA_2025_01
     ```
  
 3.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema.
