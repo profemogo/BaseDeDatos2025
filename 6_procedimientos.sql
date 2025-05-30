@@ -9,49 +9,50 @@ exec sp_colibri_historico_individuo
 exec sp_colibri_historico_individuo_detalle @anillo_metal = 'ME2508'
 */
 /*estadistica, talla de anillo general*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_estadistica_talla_anillo_especie') != 0
+IF EXISTS ( select NAME from SYS.procedures where name = 'sp_estadistica_talla_anillo_especie') 
 	DROP PROCEDURE sp_estadistica_talla_anillo_especie
 GO
 CREATE PROCEDURE sp_estadistica_talla_anillo_especie 
 AS
-	select   tamano_anillo, especie,  count ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
+	select   tamano_anillo, especie,  COUNT ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
 GO
 
 /*estadistica, talla de anillo por sexo (los machos usan anillos mas grandes que las hembras)*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_estadistica_talla_anillo_especie_por_sexo') != 0
+IF EXISTS ( select NAME from SYS.procedures where name = 'sp_estadistica_talla_anillo_especie_por_sexo')
 	DROP PROCEDURE sp_estadistica_talla_anillo_especie_por_sexo 
 GO
 	CREATE PROCEDURE sp_estadistica_talla_anillo_especie_por_sexo (@sexo int)
 	AS
-	if ( @sexo = 2 or @sexo = 4)
+	IF ( @sexo = 2 or @sexo = 4)
 	BEGIN
-		select   tamano_anillo, especie,  count ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (sexo = 2 or sexo = 4) and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
+		select   tamano_anillo, especie,  COUNT ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (sexo = 2 or sexo = 4) and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
 	END
 	ELSE IF ( @sexo = 1 OR @sexo = 3 )
 	BEGIN
-		select   tamano_anillo, especie,  count ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (sexo = 1 or sexo = 3) and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
+		select   tamano_anillo, especie,  COUNT ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where (sexo = 1 or sexo = 3) and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
 	END
 	ELSE
 	BEGIN
-			select   tamano_anillo, especie,  count ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where sexo = 0 and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
+			select   tamano_anillo, especie,  COUNT ( * ) as total  from captura_colibri inner join leyenda_especie on leyenda_especie.id = idespecie where sexo = 0 and (estatus ='N' or estatus = 'n' or estatus = 'RA' or estatus = 'ra')  group by tamano_anillo, especie order by especie, tamano_anillo
 	END
 GO
 
 
 
 /*estadistica, capturas por especie (historico)*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_estadistica_captura_colibri_historico') != 0
+IF EXISTS(select name from SYS.procedures where name = 'sp_estadistica_captura_colibri_historico') 
 	DROP PROCEDURE sp_estadistica_captura_colibri_historico
 GO
 	CREATE PROCEDURE sp_estadistica_captura_colibri_historico
 	AS 
 	DECLARE @total float
 	select @total = COUNT(*) from captura_colibri
-	select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri inner join leyenda_especie ON idespecie= leyenda_especie.id group by especie, estatus order by especie
+	select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri 
+	inner join leyenda_especie ON idespecie= leyenda_especie.id group by especie, estatus order by especie
 GO
 
 /*estadistica, capturas por especie (historico semestral). Permite apresiar olas migratorias entre el primer y segundo semestre*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_estadistica_captura_colibri_historico_semestral') != 0
+IF EXISTS( select name from SYS.procedures where name = 'sp_estadistica_captura_colibri_historico_semestral') 
 	DROP PROCEDURE sp_estadistica_captura_colibri_historico_semestral
 GO
 	CREATE PROCEDURE sp_estadistica_captura_colibri_historico_semestral(@semestre int)
@@ -61,32 +62,31 @@ GO
 	
 	IF(@semestre = 1)
 	BEGIN
-		select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri inner join leyenda_especie ON idespecie= leyenda_especie.id where MONTH(fecha) <=6 group by especie, estatus order by especie	
+		select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri 
+		inner join leyenda_especie ON idespecie= leyenda_especie.id where MONTH(fecha) <=6 group by especie, estatus order by especie	
 	END
 	ELSE
 	BEGIN
-			select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri inner join leyenda_especie ON idespecie= leyenda_especie.id where MONTH(fecha) >6 group by especie, estatus order by especie	
+			select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri 
+			inner join leyenda_especie ON idespecie= leyenda_especie.id where MONTH(fecha) >6 group by especie, estatus order by especie	
 
 	END
 GO
 
 /*estadisticas, capturas por especie por jornada de anillamiento*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_estadistica_captura_colibri_campana') != 0
+IF EXISTS ( select name from SYS.procedures where name = 'sp_estadistica_captura_colibri_campana')
 	DROP PROCEDURE sp_estadistica_captura_colibri_campana
 GO
 	CREATE PROCEDURE sp_estadistica_captura_colibri_campana (@idjornada int)
 	AS 
 	DECLARE @total float
 	select @total = COUNT(*) from captura_colibri
-	select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri inner join leyenda_especie ON idespecie= leyenda_especie.id where jornada_anillo = @idjornada group by especie, estatus order by especie
+	select especie, COUNT(*) as total_n, COUNT(*)/@total as total_p, estatus from captura_colibri 
+	inner join leyenda_especie on idespecie= leyenda_especie.id where jornada_anillo = @idjornada group by especie, estatus order by especie
 GO
 
-
-select * from captura_colibri
-
-
 /*agrupa todas las capturas por individuo, tomando en cuenta los RA */
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_colibri_historico_individuo') != 0
+IF EXISTS ( select name from SYS.procedures where name = 'sp_colibri_historico_individuo') 
 	DROP PROCEDURE sp_colibri_historico_individuo
 GO
 
@@ -102,7 +102,7 @@ GO
 /*muestra toda la informacion de las capturas realizadas para un individuo "anillo_metal", si en una anterior captura ser realizo un cambio de 
 anillo, se retornara la lista del historial independientemente del anillo actual, es decir, si ese colibri se anillo una vez, y se reanillo 2 veces mas por el
 deterioro del anillo, se retornara el historial conjunto de todos los anillos que el colibri uso.*/
-IF ( SELECT COUNT ( * ) FROM SYS.procedures where name = 'sp_colibri_historico_individuo_detalle') != 0
+IF EXISTS ( select name from SYS.procedures where name = 'sp_colibri_historico_individuo_detalle') 
 	DROP PROCEDURE sp_colibri_historico_individuo_detalle
 GO
 

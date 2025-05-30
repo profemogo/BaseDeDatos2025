@@ -1,6 +1,6 @@
 /*Siempre que se realice una nueva captura o un reanillado se registrara para poder tener un seguimiento del historico del colibri recapturado.*/
-IF ( SELECT COUNT ( * ) FROM SYS.triggers where name = 'tg_colibri_agregar_registro_colibri') != 0
-	DROP TRIGGER IF EXISTS tg_colibri_agregar_registro_colibri
+IF EXISTS (SELECT name FROM SYS.triggers where name = 'tg_colibri_agregar_registro_colibri') 
+	DROP TRIGGER tg_colibri_agregar_registro_colibri
 
 GO
 
@@ -24,7 +24,7 @@ CREATE TRIGGER  tg_colibri_agregar_registro_colibri  ON  captura_colibri
 			BEGIN
 				IF(select count (*) from registro_colibri where anillo_metal_actual = @anillo_metal_actual) = 0
 					BEGIN
-						insert into registro_colibri(localidad_asociada, anillo_metal_primario, anillo_metal_actual , tamano_anillo, idespecie, fecha , estatus, anillador)
+						INSERT INTO registro_colibri(localidad_asociada, anillo_metal_primario, anillo_metal_actual , tamano_anillo, idespecie, fecha , estatus, anillador)
 						values (@localidad, @anillo_metal_actual, @anillo_metal_actual ,@tamano_anillo , @idespecie, @fecha , @estatus, @anillador)
 					END
 				ELSE
@@ -37,7 +37,7 @@ CREATE TRIGGER  tg_colibri_agregar_registro_colibri  ON  captura_colibri
 		BEGIN
 			select @anillo_metal_primario = anillo_metal_primario from registro_colibri where anillo_metal_actual = @anillo_metal_primario
 			
-			insert into registro_colibri( localidad_asociada, anillo_metal_primario, anillo_metal_actual , tamano_anillo, idespecie, fecha , estatus, anillador)
+			INSERT INTO registro_colibri( localidad_asociada, anillo_metal_primario, anillo_metal_actual , tamano_anillo, idespecie, fecha , estatus, anillador)
 			values (@localidad, @anillo_metal_primario, @anillo_metal_actual ,@tamano_anillo , @idespecie, @fecha , @estatus, @anillador)
 		END
 	END TRY
@@ -55,8 +55,8 @@ GO
  
 
  /*siempre que se modifique la especie de una captura, se buscara si anteriormente tiene un cambio de anillo (cedula) y se modificara la especie en todos el historial */
-IF ( SELECT COUNT ( * ) FROM SYS.triggers where name = 'tg_colibri_actualzar_especie_registro_colibri') != 0
-	DROP TRIGGER IF EXISTS tg_colibri_actualzar_especie_registro_colibri
+IF EXISTS ( SELECT name FROM SYS.triggers where name = 'tg_colibri_actualzar_especie_registro_colibri') 
+	DROP TRIGGER  tg_colibri_actualzar_especie_registro_colibri
 GO
 
 

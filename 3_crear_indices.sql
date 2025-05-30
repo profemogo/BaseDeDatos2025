@@ -1,55 +1,54 @@
 BEGIN	
 --Para la tabla capturas_colibri, crearemos indices en las columnas des idespecie, anillo_metal, estatus, jornada_anillo y anillador
- IF NOT EXISTS (select count(*) from sysindexes where name = 'i_captura_colibri_anillo_metal')
-	begin
-		create nonclustered index i_captura_colibri_anillo_metal
-		on captura_colibri(anillo_metal)
-	 end
-ELSE
-	begin
-		print('    ---    Ya existe ese indice   i_captura_colibri_anillo_metal  --   ')
-	 end
+ IF EXISTS (select name from sys.indexes where name = 'i_captura_colibri_anillo_metal') 
+	DROP INDEX i_captura_colibri_anillo_metal ON captura_colibri
 
-IF NOT EXISTS (select count(*) from sysindexes where name = 'i_captura_colibri_estatus')
-	begin
-		create nonclustered index i_captura_colibri_estatus
-		on captura_colibri(estatus)
-	 end
-ELSE
-	begin
-		print('    ---    Ya existe ese indice    i_captura_colibri_estatus  --   ')
-	end
+CREATE NONCLUSTERED  INDEX i_captura_colibri_anillo_metal
+		ON captura_colibri(anillo_metal)
 
 
-IF NOT EXISTS (select count(*) from sysindexes where name = 'i_captura_colibri_idespecie')
-	begin
-		create nonclustered index i_captura_colibri_idespecie
-		on captura_colibri(idespecie)
-	 end
-ELSE
-	begin
-		print('    ---    Ya existe ese indice  i_captura_colibri_idespecie  --   ')
-	 end
+IF EXISTS (select name from sysindexes where name = 'i_captura_colibri_estatus') 
+	DROP INDEX i_captura_colibri_estatus ON captura_colibri
 
-IF NOT EXISTS (select count(*) from sysindexes where name = 'i_captura_colibri_jornada_anillo')
-	begin
-		create nonclustered index i_captura_colibri_jornada_anillo
-		on captura_colibri(jornada_anillo)
-	 end
-ELSE
-	begin
-		print('    ---    Ya existe ese indice  i_captura_colibri_jornada_anillo  --   ')
-	 end
+CREATE NONCLUSTERED  INDEX i_captura_colibri_estatus
+		ON captura_colibri(estatus)
 
- IF NOT EXISTS (select count(*) from sysindexes where name = 'i_captura_colibri_anillador')
-	begin
-		create nonclustered index i_captura_colibri_anillador
-		on captura_colibri(anillador)
-	 end
-ELSE
-	begin
-		print('    ---    Ya existe ese indice i_captura_colibri_anillador   --   ')
-	 end
+
+IF EXISTS (select name from sysindexes where name = 'i_captura_colibri_idespecie') 
+	DROP INDEX i_captura_colibri_idespecie ON captura_colibri
+
+CREATE NONCLUSTERED  INDEX i_captura_colibri_idespecie
+		ON captura_colibri(idespecie)
+	
+
+IF EXISTS (select name from sysindexes where name = 'i_captura_colibri_jornada_anillo') 
+	DROP INDEX i_captura_colibri_jornada_anillo ON captura_colibri
+
+CREATE NONCLUSTERED  INDEX i_captura_colibri_jornada_anillo
+		ON captura_colibri(jornada_anillo)
+	 
+
+ IF EXISTS (select name from sysindexes where name = 'i_captura_colibri_anillador') 
+	DROP INDEX i_captura_colibri_anillador ON captura_colibri
+
+CREATE NONCLUSTERED  INDEX i_captura_colibri_anillador
+		ON captura_colibri(anillador)
+	 
+
+/*creamos los indices para la tabla registro colibri, nos ayudaran en el proceso de los inner join y group by usados en multiples consultas.*/
+IF EXISTS (select name from sysindexes where name = 'i_registro_colibri_anillo_metal_primario')
+	DROP INDEX i_registro_colibri_anillo_metal_primario ON registro_colibri
+	
+CREATE NONCLUSTERED  INDEX i_registro_colibri_anillo_metal_primario
+		ON registro_colibri(anillo_metal_primario)
+
+IF EXISTS (select name from sysindexes where name = 'i_registro_colibri_estatus') 
+	DROP INDEX i_registro_colibri_estatus ON registro_colibri
+	
+CREATE NONCLUSTERED  INDEX i_registro_colibri_estatus
+		ON registro_colibri(estatus)
+		
+
 
 
 END
