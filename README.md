@@ -1,130 +1,111 @@
-# Base de Datos de Natación
+# Sistema de Gestión de Competencias de Natación
 
-Base de datos diseñada para gestionar competencias de natación, incluyendo nadadores, clubes, competencias y registros de tiempos.
+Base de datos diseñada para gestionar competencias de natación, nadadores, clubes y records.
 
 ## Estructura del Proyecto
 
-El proyecto está organizado los siguientes archivos SQL principales que deben ejecutarse en orden:
+El proyecto está dividido en 6 archivos principales:
 
-1. `1_tablas.sql`: Estructura base de datos
-2. `2_triggers.sql`: Triggers del sistema
-3. `3_procedimientos.sql`: Procedimientos almacenados
-4. `4_vistas.sql`: Vistas del sistema
+1. `tablas.sql`: Estructura base de la base de datos
+2. `data_inicial.sql`: Datos fundamentales del sistema
+3. `triggers.sql`: Automatizaciones para categorías y records
+4. `procedimientos.sql`: Procedimientos para registro y actualización
+5. `funciones.sql`: Funciones para cálculos de puntajes y rankings
+6. `vistas.sql`: Vistas para reportes y estadísticas
 
-## Instrucciones de Instalación
+## Características Principales
 
-### Requisitos Previos
-- MySQL 8.0 o superior
-- Cliente MySQL (mysql-client) o MySQL Workbench
+### Estilos y Distancias
+- **Estilos**: Mariposa, Espalda, Pecho, Libre y Combinado
+- **Distancias**: 50m, 100m, 200m, 400m, 800m y 1500m
+- **Combinaciones válidas**:
+  - 50m, 100m, 200m: Todos los estilos individuales
+  - 400m: Libre y Combinado
+  - 800m y 1500m: Solo Libre
 
-### Pasos de Instalación
+### Categorías por Edad
+- Infantil A (7-8 años)
+- Infantil B (9-10 años)
+- Juvenil A (11-12 años)
+- Juvenil B (13-14 años)
+- Junior (15-17 años)
+- Senior (18-25 años)
+- Master (26+ años)
 
-1. Clonar el repositorio:
-   ```bash
-   git clone [URL_DEL_REPOSITORIO]
-   cd [NOMBRE_DEL_DIRECTORIO]
-   ```
-
-2. Conectarse a MySQL:
-   ```bash
-   mysql -u tu_usuario -p
-   ```
-
-3. Ejecutar los archivos SQL en orden:
-   ```sql
-   source 1_tablas.sql
-   source 2_triggers.sql
-   source 3_procedimientos.sql
-   source 4_vistas.sql
-   ```
-
-   O desde la línea de comandos:
-   ```bash
-   mysql -u tu_usuario -p swimmingProject_v1 < 1_tablas.sql
-   mysql -u tu_usuario -p swimmingProject_v1 < 2_triggers.sql
-   mysql -u tu_usuario -p swimmingProject_v1 < 3_procedimientos.sql
-   mysql -u tu_usuario -p swimmingProject_v1 < 4_vistas.sql
-   ```
+### Sistema de Puntuación
+- 1° lugar: 10 puntos
+- 2° lugar: 8 puntos
+- 3° lugar: 6 puntos
+- 4° lugar: 5 puntos
+- 5° lugar: 4 puntos
+- 6° lugar: 3 puntos
+- 7° lugar: 2 puntos
+- 8° lugar: 1 punto
 
 ## Tablas Principales
 
-- **Nadadores**: Información personal (nombre, apellidos, fecha_nacimiento, género, club, categoría)
-- **Club**: Datos de clubes deportivos (nombre, dirección, contacto)
-- **Competencias**: Eventos deportivos (nombre, fechas, ubicación, tipo)
-- **Series**: Divisiones de competencias (número, estilo, metraje, categoría)
-- **RegistroCompetencias**: Inscripciones de nadadores (nadador, competencia, serie, carril, estado)
-- **Tiempos**: Registros de tiempos en competencias
-- **Records**: Récords establecidos (club, regional, nacional, mundial)
-- **CategoriaEdad**: Clasificación por edades
-- **EstilosNado**: Tipos de estilos (libre, mariposa, etc.)
-- **Metrajes**: Distancias de competencia
-- **EstiloMetraje**: Relación entre estilos y distancias
-- **historial_cambios**: Registro de modificaciones en la base de datos
+### Entidades Base
+- `Club`: Organizaciones deportivas participantes
+- `Nadadores`: Información personal y deportiva de cada nadador
+- `Entrenadores`: Staff técnico de los clubes
+- `EstilosNado`: Tipos de nado permitidos
+- `Metrajes`: Distancias oficiales
+- `CategoriaEdad`: Rangos de edad para competencia
+- `Genero`: Clasificación por género
 
-## Restricciones Importantes
+### Competencias y Series
+- `Competencias`: Eventos deportivos organizados
+- `Series`: Subdivisiones de competencias
+- `RegistroCompetencias`: Inscripciones y resultados
+- `EstiloMetraje`: Combinaciones válidas de estilo y distancia
 
-En RegistroCompetencias:
-- Un nadador no puede estar en dos series diferentes al mismo tiempo
-- Un carril no puede estar asignado dos veces en la misma serie
+### Resultados y Records
+- `Tiempos`: Registro de tiempos por nadador
+- `Records`: Mejores marcas históricas
+- `historial_cambios`: Registro de modificaciones
 
-## Triggers
+## Funcionalidades Automatizadas
 
-1. **after_nadador_update**: 
-   - Actualiza automáticamente la categoría de edad de un nadador
-   - Se ejecuta después de insertar un nuevo nadador
+### Triggers
+- Actualización automática de categorías por edad
+- Registro automático de records
+- Seguimiento de cambios en tiempos
 
-2. **after_tiempo_changes**:
-   - Registra cambios en tiempos y récords
-   - Actualiza la tabla de Records si se establece un nuevo récord
-   - Mantiene el historial de cambios
+### Procedimientos Almacenados
+- Actualización de categorías (de todos los registros)
+- Registro de nadadores en competencias
+- Validaciones de inscripción
 
-## Procedimientos Almacenados
+### Funciones
+- Cálculo de puntajes por competencia
+- Cálculo de ranking de clubes
 
-1. **actualizar_categorias_edad**:
-   ```sql
-   CALL actualizar_categorias_edad();
-   ```
-   - Actualiza las categorías de edad de todos los nadadores
-   - Se recomienda ejecutar periódicamente
+## Reportes Disponibles
 
-2. **registrar_nadador_competencia**:
-   ```sql
-   CALL registrar_nadador_competencia(
-       p_nadador_id,
-       p_competencia_id,
-       p_serie_id,
-       p_carril
-   );
-   ```
-   - Inscribe un nadador en una competencia con validaciones completas
+1. **Vista Nadadores por Club**
+   - Total de nadadores por club
+   - Lista de nadadores con edades
 
-## Vista Principal
+2. **Vista Estadísticas**
+   - Rendimiento por nadador
+   - Records conseguidos
+   - Estilo más fuerte
 
-**vista_nadadores_por_club**:
+## Instalación
+
+1. Crear la base de datos:
 ```sql
-SELECT * FROM vista_nadadores_por_club;
-```
-- Muestra un resumen de nadadores por club
-- Incluye: nombre del club, ciudad, total de nadadores y lista detallada
-
-## Ejemplos de Uso
-
-### 1. Registrar un Nadador en Competencia
-```sql
-CALL registrar_nadador_competencia(1, 1, 1, 4);
--- Registra al nadador ID 1 en la competencia 1, serie 1, carril 4
+CREATE DATABASE swimmingProject_v1;
 ```
 
-### 2. Actualizar Categorías de Edad
+2. Ejecutar los archivos en orden:
 ```sql
-CALL actualizar_categorias_edad();
--- Actualiza todas las categorías de edad
-```
-
-### 3. Ver Resumen de Clubes
-```sql
-SELECT * FROM vista_nadadores_por_club;
--- Muestra el resumen de todos los clubes con sus nadadores
+source tablas.sql
+source data_inicial.sql
+source triggers.sql
+source procedimientos.sql
+source funciones.sql
+source vistas.sql
 ```
 
 ## Mantenimiento y Respaldo
@@ -141,9 +122,10 @@ mysql -u tu_usuario -p swimmingProject_v1 < backup.sql
 
 ## Notas Importantes
 
-- Las categorías de edad se actualizan automáticamente al insertar nadadores
-- Los récords se registran automáticamente al detectar nuevos mejores tiempos
-- Todos los cambios en tiempos se registran en historial_cambios
+- Las categorías de edad se actualizan automáticamente
+- Los records se registran y validan automáticamente
+- Todos los cambios quedan registrados en historial_cambios
+- Sistema optimizado con índices para consultas frecuentes
 
 Hecho Por: Julio Cesar Vasquez Garcia
 
