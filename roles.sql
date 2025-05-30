@@ -3,34 +3,44 @@
 --     Roles y Permisos de la base de datos
 -- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 
+-- Eliminar roles existentes si existen
+DROP ROLE IF EXISTS 'admin_role'@'localhost';
+DROP ROLE IF EXISTS 'usuario_role'@'localhost';
+DROP ROLE IF EXISTS 'auditor_role'@'localhost';
+
+-- Eliminar usuarios existentes si existen
+DROP USER IF EXISTS 'admin'@'localhost';
+DROP USER IF EXISTS 'usuario1'@'localhost';
+DROP USER IF EXISTS 'auditor1'@'localhost';
+
 -- Crear roles
-CREATE ROLE 'admin_role';
-CREATE ROLE 'usuario_role';
-CREATE ROLE 'auditor_role';
+CREATE ROLE 'admin_role'@'localhost';
+CREATE ROLE 'usuario_role'@'localhost';
+CREATE ROLE 'auditor_role'@'localhost';
 
 -- Asignar permisos al rol de administrador
-GRANT ALL PRIVILEGES ON *.* TO 'admin_role';
+GRANT ALL PRIVILEGES ON *.* TO 'admin_role'@'localhost';
 
 -- Asignar permisos al rol de usuario
 -- Permisos para sus propios datos
-GRANT SELECT, UPDATE ON Usuario TO 'usuario_role';
-GRANT SELECT, INSERT, UPDATE, DELETE ON Transaccion TO 'usuario_role';
-GRANT SELECT, INSERT, UPDATE, DELETE ON Presupuesto TO 'usuario_role';
-GRANT SELECT, INSERT, UPDATE, DELETE ON Meta TO 'usuario_role';
-GRANT SELECT, INSERT, UPDATE, DELETE ON CuentaBancaria TO 'usuario_role';
-GRANT SELECT ON Categoria TO 'usuario_role';
-GRANT SELECT ON TipoTransaccion TO 'usuario_role';
-GRANT SELECT ON HistorialTransaccion TO 'usuario_role';
+GRANT SELECT, UPDATE ON Usuario TO 'usuario_role'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON Transaccion TO 'usuario_role'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON Presupuesto TO 'usuario_role'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON Meta TO 'usuario_role'@'localhost';
+GRANT SELECT, INSERT, UPDATE, DELETE ON CuentaBancaria TO 'usuario_role'@'localhost';
+GRANT SELECT ON Categoria TO 'usuario_role'@'localhost';
+GRANT SELECT ON TipoTransaccion TO 'usuario_role'@'localhost';
+GRANT SELECT ON HistorialTransaccion TO 'usuario_role'@'localhost';
 
 -- Asignar permisos al rol de auditor
-GRANT SELECT ON Usuario TO 'auditor_role';
-GRANT SELECT ON Transaccion TO 'auditor_role';
-GRANT SELECT ON Presupuesto TO 'auditor_role';
-GRANT SELECT ON Meta TO 'auditor_role';
-GRANT SELECT ON CuentaBancaria TO 'auditor_role';
-GRANT SELECT ON Categoria TO 'auditor_role';
-GRANT SELECT ON TipoTransaccion TO 'auditor_role';
-GRANT SELECT ON HistorialTransaccion TO 'auditor_role';
+GRANT SELECT ON Usuario TO 'auditor_role'@'localhost';
+GRANT SELECT ON Transaccion TO 'auditor_role'@'localhost';
+GRANT SELECT ON Presupuesto TO 'auditor_role'@'localhost';
+GRANT SELECT ON Meta TO 'auditor_role'@'localhost';
+GRANT SELECT ON CuentaBancaria TO 'auditor_role'@'localhost';
+GRANT SELECT ON Categoria TO 'auditor_role'@'localhost';
+GRANT SELECT ON TipoTransaccion TO 'auditor_role'@'localhost';
+GRANT SELECT ON HistorialTransaccion TO 'auditor_role'@'localhost';
 
 -- Crear usuarios de ejemplo
 CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';
@@ -38,9 +48,9 @@ CREATE USER 'usuario1'@'localhost' IDENTIFIED BY 'user';
 CREATE USER 'auditor1'@'localhost' IDENTIFIED BY 'auditor';
 
 -- Asignar roles a usuarios
-GRANT 'admin_role' TO 'admin'@'localhost';
-GRANT 'usuario_role' TO 'usuario1'@'localhost';
-GRANT 'auditor_role' TO 'auditor1'@'localhost';
+GRANT 'admin_role'@'localhost' TO 'admin'@'localhost';
+GRANT 'usuario_role'@'localhost' TO 'usuario1'@'localhost';
+GRANT 'auditor_role'@'localhost' TO 'auditor1'@'localhost';
 
 -- Activar roles por defecto
 SET DEFAULT ROLE ALL TO 'admin'@'localhost';

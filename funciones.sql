@@ -90,7 +90,6 @@ END$$
 
 DELIMITER ;
 
--- DROP FUNCTION IF EXISTS porcentaje_avance_meta;
 
 -- Función: Cantidad de transacciones de un usuario en un mes específico
 DELIMITER $$

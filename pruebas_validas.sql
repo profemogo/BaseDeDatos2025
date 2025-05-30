@@ -210,7 +210,7 @@ SELECT * FROM HistorialTransaccion ORDER BY id DESC LIMIT 2;
 -- Pruebas del trigger de presupuesto
 -- Primero creamos un usuario de prueba
 INSERT INTO Usuario (nombre, email, password) VALUES
-('Usuario Prueba', 'prueba@test.com', 'password123');
+('Usuario Prueba', 'prueba@test.com', '123');
 
 -- Creamos una cuenta bancaria para el usuario
 INSERT INTO CuentaBancaria (usuario_id, banco, numero_cuenta) VALUES

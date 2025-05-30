@@ -15,7 +15,7 @@ CREATE TABLE Usuario (
 -- Tabla de TipoTransaccion
 CREATE TABLE TipoTransaccion (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL
+    nombre VARCHAR(50) NOT NULL UNIQUE
 );
 
 -- Tabla de Categoria
@@ -24,7 +24,8 @@ CREATE TABLE Categoria (
     nombre VARCHAR(50) NOT NULL UNIQUE,
     tipo_transaccion_id INT,
     descripcion TEXT,
-    FOREIGN KEY (tipo_transaccion_id) REFERENCES TipoTransaccion(id) ON DELETE CASCADE
+    FOREIGN KEY (tipo_transaccion_id) REFERENCES TipoTransaccion(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_categoria_tipo (nombre, tipo_transaccion_id)
 );
 
 -- Tabla de CuentaBancaria 
@@ -49,7 +50,8 @@ CREATE TABLE Transaccion (
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
     FOREIGN KEY (tipo_transaccion_id) REFERENCES TipoTransaccion(id) ON DELETE CASCADE,
     FOREIGN KEY (cuenta_bancaria_id) REFERENCES CuentaBancaria(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
+    FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_transaccion (usuario_id, fecha, monto, categoria_id)
 );
 
 -- Tabla de Presupuesto
@@ -58,9 +60,10 @@ CREATE TABLE Presupuesto (
     usuario_id INT,
     categoria_id INT,
     monto_limite DECIMAL(12,2) NOT NULL CHECK (monto_limite > 0),
-    periodo VARCHAR(20) NOT NULL,
+    periodo ENUM('Mensual', 'Anual', 'Semanal') NOT NULL,
     FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
-    FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE
+    FOREIGN KEY (categoria_id) REFERENCES Categoria(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_presupuesto (usuario_id, categoria_id)
 );
 
 -- Tabla de Meta
@@ -71,7 +74,8 @@ CREATE TABLE Meta (
     monto_objetivo DECIMAL(12,2) NOT NULL CHECK (monto_objetivo > 0),
     fecha_objetivo DATE NOT NULL,
     progreso DECIMAL(12,2) DEFAULT 0 CHECK (progreso >= 0),
-    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE
+    FOREIGN KEY (usuario_id) REFERENCES Usuario(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_meta (usuario_id, nombre)
 );
 
 -- Tabla de HistorialTransaccion
