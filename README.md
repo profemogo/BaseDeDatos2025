@@ -39,7 +39,7 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
     ```
     Ahora si puedes crear la base de datos con:
     ```bash
-    mysql -u root -p -e "CREATE DATABASE < HistoriasMedicas;"
+    mysql -u root -p -e "CREATE DATABASE HistoriasMedicas;"
     ```
 
 4.  **Cargar la estructura:** Importa el archivo `.sql` a la base de datos que creaste. Puedes hacerlo utilizando la línea de comandos:

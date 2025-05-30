@@ -9,13 +9,13 @@ CREATE TABLE EstadoCivil (
 -- Tipo de Documento
 CREATE TABLE TipoDocumento (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    descripcion VARCHAR(20) NOT NULL,
+    descripcion VARCHAR(20) NOT NULL UNIQUE,
     abreviatura CHAR(1) NOT NULL UNIQUE
 );
 
 -- Tipo de Documento
 CREATE TABLE TipoInforme (
-    id INT PRIMARY KEY AUTO_INCREMENT,
+    id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
     descripcion VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) NOT NULL UNIQUE
 );
