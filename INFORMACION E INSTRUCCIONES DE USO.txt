@@ -1,0 +1,39 @@
+1 - Descripción
+
+Este proyecto contiene la base de datos para gestionar las 
+notas de los estudiantes de una institución educativa.
+
+ 2- Tablas 
+
+1) Genero: Define los géneros posibles (Masculino, Femenino, Otros).
+
+2) Grado: Define los grados dentro de la institución
+
+3) Sección: Almacena información sobre la cantidad de secciones posibles.
+
+4) Profesor: Almacena la información referente a los profesores (nombre
+   ,apellido, email, teléfono)
+
+5) Estudiante: Contiene los datos de los estudiantes de la institución
+   (nombre, apellido, fecha de nacimiento)
+
+6) Asignatura: Nombres de las asignaturas impartidas en la institución
+
+7) AsignaturaGrado: Esta tabla relaciona las tablas asignatura, grado y profesor.
+
+8) Nota: En esta tabla se almacenan las notas por grado y asignatura de cada 
+   estudiante
+
+9) Auditoria: Tabla para almacenar información de los cambios hechos en las tablas
+   (inserciones. actualizaciones de información, y eliminaciones)
+
+
+
+-3 Orden de ejecución de los archivos .sql.
+
+Para ejecutarlos (crear la base de datos, añadirle triggers ect) se debe seguir
+el orden de numeración de los archivos (van del 01 al 12).
+Usar el siguiente comando en la dirección donde se encuentran los archivos
+
+mysql -u root -p GestionNotas < 01_NombrePrimerArchivo.sql 
+
