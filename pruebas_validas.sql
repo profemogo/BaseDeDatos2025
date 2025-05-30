@@ -166,20 +166,19 @@ SELECT ObtenerSaldoUsuario(2) AS saldo_juan;
 SELECT ObtenerSaldoUsuario(3) AS saldo_ana;
 
 -- 2. Obtener el Total de gastos de un usuario en un periodo
-SELECT total_gastos_usuario_periodo(1, '2024-03-01', '2024-03-31') AS gastos_marzo_maria;
+SELECT TotalGastosUsuarioPeriodo(1, '2024-03-01', '2024-03-31') AS GastosMarzoMaria;
 
 -- 3. Obtener el Total de ingresos de un usuario en un periodo
-SELECT total_ingresos_usuario_periodo(1, '2024-03-01', '2024-03-31') AS ingresos_marzo_maria;
+SELECT TotalIngresosUsuarioPeriodo(1, '2024-03-01', '2024-03-31') AS IngresosMarzoMaria;
 
 -- 4. Obtener el Porcentaje de avance de una meta financiera
 -- Por ejemplo, para la meta con id=1
-SELECT porcentaje_avance_meta(1);
---Ver los porcentajes de avance de todas las metas de un usuario
--- Por ejemplo, para el usuario con id=1 RRRRRRRREVISR
+SELECT PorcentajeAvanceMeta(1);
+
 
 
 --5. Obtener el Total de transacciones de un usuario en un mes específico
-SELECT CantidadTransaccionesMes(1, 2024, 3) AS transacciones_marzo_maria;
+SELECT CantidadTransaccionesMes(1, 2024, 3) AS TransaccionesMarzoMaria;
 
 
 -- Probar los Procedimientos
@@ -208,46 +207,60 @@ SELECT * FROM Transaccion WHERE usuario_id = 1 ORDER BY id DESC LIMIT 2;
 SELECT * FROM HistorialTransaccion ORDER BY id DESC LIMIT 2;
 
 -- Pruebas del trigger de presupuesto
--- Primero creamos un usuario de prueba
+-- Primero creamos un usuario de prueba y verificamos su inserción
 INSERT INTO Usuario (nombre, email, password) VALUES
 ('Usuario Prueba', 'prueba@test.com', '123');
 
--- Creamos una cuenta bancaria para el usuario
-INSERT INTO CuentaBancaria (usuario_id, banco, numero_cuenta) VALUES
-(LAST_INSERT_ID(), 'Banco Test', '1234567890');
+-- Verificamos que el usuario se creó correctamente y guardamos su ID
+SELECT @nuevo_usuario_id := id as id_usuario 
+FROM Usuario 
+WHERE email = 'prueba@test.com' 
+ORDER BY id DESC 
+LIMIT 1;
 
--- Creamos presupuestos para diferentes períodos
+-- Verificamos que el usuario existe
+SELECT * FROM Usuario WHERE id = @nuevo_usuario_id;
+
+-- Si el usuario existe, continuamos con la creación de la cuenta bancaria
+INSERT INTO CuentaBancaria (usuario_id, banco, numero_cuenta) VALUES
+(@nuevo_usuario_id, 'Banco Test', '1234567890');
+
+-- Guardamos el ID de la cuenta bancaria
+SELECT @nueva_cuenta_id := id as id_cuenta
+FROM CuentaBancaria
+WHERE usuario_id = @nuevo_usuario_id
+ORDER BY id DESC
+LIMIT 1;
+
+-- Verificamos que la cuenta se creó correctamente
+SELECT * FROM CuentaBancaria WHERE id = @nueva_cuenta_id;
+
+-- Creamos presupuestos para diferentes períodos usando el mismo ID
 INSERT INTO Presupuesto (usuario_id, categoria_id, monto_limite, periodo) VALUES
 -- Presupuesto mensual para Alimentación (categoría 9)
-(LAST_INSERT_ID(), 9, 1000.00, 'Mensual'),
+(@nuevo_usuario_id, 9, 1000.00, 'Mensual'),
 -- Presupuesto anual para Vivienda (categoría 7)
-(LAST_INSERT_ID(), 7, 12000.00, 'Anual'),
--- Presupuesto semanal para Transporte (categoría 8)
-(LAST_INSERT_ID(), 8, 200.00, 'Semanal');
+(@nuevo_usuario_id, 7, 12000.00, 'Anual'),
+
+
+-- Verificamos que los presupuestos se crearon correctamente
+SELECT * FROM Presupuesto WHERE usuario_id = @nuevo_usuario_id;
 
 -- Prueba 1: Transacción dentro del límite mensual
 INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 500.00, CURRENT_TIMESTAMP, 9, 'Compra de víveres');
+VALUES (@nuevo_usuario_id, 2, @nueva_cuenta_id, 500.00, CURRENT_TIMESTAMP, 9, 'Compra de víveres');
 
 -- Prueba 2: Transacción que supera el límite mensual
 INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 600.00, CURRENT_TIMESTAMP, 9, 'Compra de víveres adicionales');
+VALUES (@nuevo_usuario_id, 2, @nueva_cuenta_id, 600.00, CURRENT_TIMESTAMP, 9, 'Compra de víveres adicionales');
 
 -- Prueba 3: Transacción dentro del límite anual
 INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 5000.00, CURRENT_TIMESTAMP, 7, 'Pago de renta');
+VALUES (@nuevo_usuario_id, 2, @nueva_cuenta_id, 5000.00, CURRENT_TIMESTAMP, 7, 'Pago de renta');
 
 -- Prueba 4: Transacción que supera el límite anual
 INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 8000.00, CURRENT_TIMESTAMP, 7, 'Pago de renta adicional');
-
--- Prueba 5: Transacción dentro del límite semanal
-INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 100.00, CURRENT_TIMESTAMP, 8, 'Gasolina');
-
--- Prueba 6: Transacción que supera el límite semanal
-INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, monto, fecha, categoria_id, descripcion)
-VALUES (LAST_INSERT_ID(), 2, LAST_INSERT_ID(), 150.00, CURRENT_TIMESTAMP, 8, 'Gasolina adicional');
+VALUES (@nuevo_usuario_id, 2, @nueva_cuenta_id, 8000.00, CURRENT_TIMESTAMP, 7, 'Pago de renta adicional');
 
 -- Verificar los resultados
 SELECT 
@@ -260,11 +273,11 @@ SELECT
 FROM Transaccion t
 JOIN Categoria c ON t.categoria_id = c.id
 JOIN Presupuesto p ON t.categoria_id = p.categoria_id AND t.usuario_id = p.usuario_id
-WHERE t.usuario_id = LAST_INSERT_ID()
+WHERE t.usuario_id = @nuevo_usuario_id
 ORDER BY t.id;
 
 -- Limpiar datos de prueba
-DELETE FROM Transaccion WHERE usuario_id = LAST_INSERT_ID();
-DELETE FROM Presupuesto WHERE usuario_id = LAST_INSERT_ID();
-DELETE FROM CuentaBancaria WHERE usuario_id = LAST_INSERT_ID();
-DELETE FROM Usuario WHERE id = LAST_INSERT_ID();
+DELETE FROM Transaccion WHERE usuario_id = @nuevo_usuario_id;
+DELETE FROM Presupuesto WHERE usuario_id = @nuevo_usuario_id;
+DELETE FROM CuentaBancaria WHERE usuario_id = @nuevo_usuario_id;
+DELETE FROM Usuario WHERE id = @nuevo_usuario_id;
