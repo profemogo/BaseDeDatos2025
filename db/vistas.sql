@@ -30,7 +30,7 @@ SELECT
     p.documento AS documento,
     CalcularEdad(p.fecha_nacimiento) AS edad,
     ec.descripcion AS estado_civil,
-    p.estudio AS profesion_ocupacion,
+    p.estudio AS estudios,
     p.direccion,
     GROUP_CONCAT(DISTINCT t.numero SEPARATOR ', ') AS telefonos,
     
@@ -59,7 +59,7 @@ SELECT
     af.descripcion AS antecedentes_familiares,
     
     -- Antecedente Personal
-    CONCAT(ts.descripcion, IF(ts.factor = 1, '+', '-')) AS grupo_sanguineo,
+    ts.tipo AS grupo_sanguineo,
     ap.descripcion AS antecedentes_personales,
     
     -- Antecedente Obstétrico
@@ -118,7 +118,7 @@ WITH ControlesNumerados AS (
 SELECT 
     cn.nombre,
     cn.apellido,
-    cn.documento AS cedula,
+    cn.documento AS documento,
     cn.numero_control,
     DATE_FORMAT(cn.fecha, '%d/%m/%Y') AS fecha_control,
     CONCAT(cn.peso, ' kg') AS peso,
@@ -127,7 +127,6 @@ SELECT
     cn.frecuencia_cardiaca AS frecuencia_cardiaca_bpm,
     cn.observaciones AS observaciones_control,
     ti.codigo AS codigo_informe,
-    ti.descripcion AS tipo_informe,
     i.conclusion
 FROM 
     ControlesNumerados cn

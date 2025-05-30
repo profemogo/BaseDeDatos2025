@@ -9,23 +9,20 @@ CREATE TABLE EstadoCivil (
 -- Tipo de Documento
 CREATE TABLE TipoDocumento (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    descripcion VARCHAR(20) NOT NULL UNIQUE,
-    abreviatura CHAR(1) NOT NULL UNIQUE
+    abreviatura CHAR(1) NOT NULL UNIQUE,
+    CONSTRAINT chk_abreviatura_mayusculas CHECK (BINARY abreviatura = BINARY UPPER(abreviatura))
 );
-
 -- Tipo de Documento
 CREATE TABLE TipoInforme (
     id INT PRIMARY KEY AUTO_INCREMENT UNIQUE,
-    descripcion VARCHAR(100) NOT NULL,
     codigo VARCHAR(20) NOT NULL UNIQUE
 );
 
 -- Tipo de Sangre
 CREATE TABLE TipoSangre (
     id INT PRIMARY KEY AUTO_INCREMENT,
-    descripcion VARCHAR(5) NOT NULL,
-    factor BOOLEAN NOT NULL DEFAULT FALSE,
-    UNIQUE KEY (descripcion, factor)
+    tipo VARCHAR(5) NOT NULL UNIQUE,
+    CONSTRAINT chk_tipo_mayusculas CHECK (BINARY tipo = BINARY UPPER(tipo))
 );
 
 -- Pacientes

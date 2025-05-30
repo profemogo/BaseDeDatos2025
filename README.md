@@ -31,6 +31,13 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
 1.  **Instalar MySQL:** Si aún no tienes MySQL instalado, descárgalo e instálalo desde el sitio web oficial de MySQL ([https://www.mysql.com/](https://www.mysql.com/)).
 
 2. **Clonar este Repositorio**
+    ```bash
+    git clone <URL a este repositorio>
+    ```
+    Cambiate a esta rama
+    ```bash
+    git switch ANDRE_MIRANDA_2025_01
+    ```
  
 3.  **Crear una Base de Datos:** Una vez que MySQL esté instalado, crea una **NUEVA** base de datos donde se importará el esquema.
     Si ya tienes una base de datos con el nombre **HistoriasMedicas**, elimininala previamente con (PRECAUCION, ESTE COMANDO ELIMINARA TODO EL CONTENIDO DE LA BASE DE DATOS CON NOMBRE HistoriasMedicas):
