@@ -29,7 +29,7 @@ CREATE TABLE User (
 
 CREATE TABLE CategoryGroup (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
     icon VARCHAR(255),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
@@ -40,18 +40,19 @@ CREATE TABLE CategoryGroup (
 CREATE TABLE Category (  
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
     name VARCHAR(100) NOT NULL,
-    icon VARCHAR(2048) NOT NULL,
+    icon VARCHAR(255) DEFAULT 'interrogation',
     category_group_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (category_group_id) REFERENCES CategoryGroup(id)
+    FOREIGN KEY (category_group_id) REFERENCES CategoryGroup(id),
+    UNIQUE (name, category_group_id)
 );
 
 -- Currency Table
 
 CREATE TABLE Currency (
     id INTEGER PRIMARY KEY AUTO_INCREMENT,
-    name VARCHAR(100) NOT NULL,
+    name VARCHAR(100) UNIQUE NOT NULL,
     symbol VARCHAR(10) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
