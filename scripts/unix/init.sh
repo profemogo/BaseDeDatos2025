@@ -33,3 +33,6 @@ mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/indexes.sql
 
 # Initialize the triggers
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/triggers.sql
+
+# Initialize the views
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/views.sql

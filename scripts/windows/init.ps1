@@ -32,3 +32,6 @@ mysql -u $DbUser -p$DbPassword $DbName < .\definitions\indexes.sql
 
 # Initialize the triggers
 mysql -u $DbUser -p$DbPassword $DbName < .\definitions\triggers.sql
+
+# Initialize the views
+mysql -u $DbUser -p$DbPassword $DbName < .\definitions\views.sql
