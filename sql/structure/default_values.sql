@@ -8,8 +8,8 @@ INSERT INTO PostType (name, description) VALUES
     ('video', 'post with video');
 
 INSERT INTO ContentType (name, description) VALUES
-    ('text', 'Text only'),
-    ('image/jpg', 'image JPEG'),
+    ('text', 'text only'),
+    ('image/jpg', 'image JPG'),
     ('image/png', 'image PNG'),
     ('video/mp4', 'video MP4');
 

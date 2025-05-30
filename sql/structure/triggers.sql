@@ -1,7 +1,7 @@
 -- Triggers
 
 DELIMITER //
-CREATE TRIGGER validate_chat_participant
+CREATE TRIGGER ValidateChatParticipant
 BEFORE INSERT ON MessageReceptor
 FOR EACH ROW
 BEGIN
@@ -21,7 +21,7 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE TRIGGER update_message_status
+CREATE TRIGGER UpdateMessageStatus
 BEFORE UPDATE ON MessageReceptor
 FOR EACH ROW
 BEGIN
@@ -36,7 +36,7 @@ END//
 DELIMITER ;
 
 DELIMITER //
-CREATE TRIGGER soft_delete_user
+CREATE TRIGGER SoftDeleteUser
 BEFORE UPDATE ON User
 FOR EACH ROW
 BEGIN

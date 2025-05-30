@@ -31,6 +31,27 @@ BEGIN
 END//
 DELIMITER ;
 
+DELIMITER //
+CREATE PROCEDURE GetUserStats(IN p_user_id INT)
+BEGIN
+    SELECT
+        u.id,
+        u.username,
+        u.name,
+        u.is_active,
+        (SELECT COUNT(*) FROM Post WHERE user_id = p_user_id AND is_active = TRUE) AS post_count,
+        (SELECT COUNT(*) FROM Comment WHERE user_id = p_user_id AND is_active = TRUE) AS comment_count,
+        (SELECT COUNT(*) FROM PostLike WHERE user_id = p_user_id) AS likes_given,
+        (SELECT COUNT(*) FROM PostLike WHERE post_id IN (SELECT id FROM Post WHERE user_id = p_user_id)) AS likes_received,
+        (SELECT COUNT(*) FROM Message WHERE user_id = p_user_id) AS messages_sent,
+        (SELECT COUNT(*) FROM MessageReceptor WHERE user_id = p_user_id AND is_read = FALSE) AS unread_messages
+    FROM
+        User u
+    WHERE
+        u.id = p_user_id;
+END //
+DELIMITER ;
+
 -- Functions
 
 DELIMITER //
