@@ -109,9 +109,13 @@ CREATE TABLE Expense (
     expense_date TIMESTAMP NOT NULL,
     type ENUM('Transfer', 'SplitEqual', 'SplitUnequal', 'SinglePayer') NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by_user_id INTEGER NOT NULL,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    updated_by_user_id INTEGER,
     FOREIGN KEY (workspace_id) REFERENCES Workspace(id),
-    FOREIGN KEY (category_id) REFERENCES Category(id)
+    FOREIGN KEY (category_id) REFERENCES Category(id),
+    FOREIGN KEY (created_by_user_id) REFERENCES User(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES User(id)
 );
 
 -- ExpenseSplit Table
@@ -121,6 +125,23 @@ CREATE TABLE ExpenseSplit (
     expense_id INTEGER NOT NULL,
     user_id INTEGER NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by_user_id INTEGER NOT NULL,
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    updated_by_user_id INTEGER NOT NULL,
+    FOREIGN KEY (expense_id) REFERENCES Expense(id),
+    FOREIGN KEY (user_id) REFERENCES User(id),
+    FOREIGN KEY (created_by_user_id) REFERENCES User(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES User(id)
+);
+
+-- ExpenseComment Table
+
+CREATE TABLE ExpenseComment (
+    id INTEGER PRIMARY KEY AUTO_INCREMENT,
+    expense_id INTEGER NOT NULL,
+    user_id INTEGER NOT NULL,
+    comment TEXT NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (expense_id) REFERENCES Expense(id),
