@@ -22,7 +22,7 @@ SHOW GRANTS FOR 'auditor1'@'localhost';
 -- SELECT * FROM Usuario;
 -- INSERT INTO Usuario (nombre, email, password) VALUES ('Test Admin', 'test@admin.com', 'test123');
 -- DELETE FROM Usuario WHERE id = 1;  -- Debería funcionar
--- DROP TABLE Usuario;  -- Debería funcionar
+
 
 -- Prueba como usuario1 (debería tener permisos limitados):
 -- mysql -u usuario1 -p

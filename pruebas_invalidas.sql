@@ -9,7 +9,7 @@ INSERT INTO Transaccion (usuario_id, tipo_transaccion_id, cuenta_bancaria_id, mo
 VALUES (1, 2, 1, -100.00, NOW(), 9, 'Monto negativo');
 
 -- 2. Intentar insertar una transacción con fecha futura (debe fallar por CHECK)
--- Esto debe fallar por el trigger before_insert_meta
+-- Esto debe fallar por el trigger 
 INSERT INTO Meta (usuario_id, nombre, monto_objetivo, fecha_objetivo, progreso)
 VALUES (1, 'Meta Inválida', 1000.00, '2020-01-01', 0);
 
