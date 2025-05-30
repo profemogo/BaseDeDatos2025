@@ -1,4 +1,4 @@
-IF(select COUNT ( * ) from sys.views where name = 'vw_captura_colibri') > 0
+IF EXISTS (select name from sys.views where name = 'vw_captura_colibri') 
 	DROP view vw_captura_colibri
 GO
 CREATE VIEW vw_captura_colibri
@@ -11,7 +11,7 @@ CREATE VIEW vw_captura_colibri
 GO
 
 
-IF(select COUNT ( * ) from sys.views where name = 'vw_registro_colibri') > 0
+IF EXISTS (select name from sys.views where name = 'vw_registro_colibri') 
 	DROP view vw_registro_colibri
 GO
 CREATE VIEW vw_registro_colibri
@@ -22,7 +22,7 @@ CREATE VIEW vw_registro_colibri
 GO
 
 
-IF(select COUNT ( * ) from sys.views where name = 'vw_usuario') > 0
+IF EXISTS (select name from sys.views where name = 'vw_usuario') 
 	DROP view vw_usuario
 GO
 CREATE VIEW vw_usuario
@@ -32,7 +32,7 @@ CREATE VIEW vw_usuario
 GO
 
 
-IF(select COUNT ( * ) from sys.views where name = 'vw_centro_registro_localidad') > 0
+IF EXISTS (select name from sys.views where name = 'vw_centro_registro_localidad') 
 	DROP view vw_centro_registro_localidad
 GO
 CREATE VIEW vw_centro_registro_localidad

@@ -9,7 +9,7 @@ exec sp_colibri_historico_individuo
 exec sp_colibri_historico_individuo_detalle @anillo_metal = 'ME2508'
 */
 /*estadistica, talla de anillo general*/
-IF EXISTS ( select NAME from SYS.procedures where name = 'sp_estadistica_talla_anillo_especie') 
+IF EXISTS ( select name from SYS.procedures where name = 'sp_estadistica_talla_anillo_especie') 
 	DROP PROCEDURE sp_estadistica_talla_anillo_especie
 GO
 CREATE PROCEDURE sp_estadistica_talla_anillo_especie 
