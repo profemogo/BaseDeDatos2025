@@ -79,7 +79,7 @@ UPDATE WorkspaceInvitation SET status = 'Accepted'
 WHERE receiver_email = 'maria.gomez@example.com' 
 AND workspace_id = @workspace_hogar_id;
 
--- Juan va de compras con Maria y decide registrar el gasto en el workspace
+-- Juan va de compras con Maria, Maria paga y le pide a Juan que registre el gasto en el workspace
 SET @category_supermercado_id = (SELECT id FROM Category WHERE name = 'Supermercado');
 CALL CreateExpenseWithSplits(
     JSON_OBJECT(
@@ -106,34 +106,39 @@ CALL CreateExpenseWithSplits(
     @new_expense_id
 );
 
--- Sin embargo Juan es muy despistado y registra el pago erróneamente. Por lo que Maria decide corregirlo
+-- Sin embargo Juan es muy despistado y registra el pago erróneamente. 
+-- Por lo que Maria con el fin de que los gastos sean correctos y claros
+-- decide corregirlo por su cuenta y evitar discutir con Juan.
+-- (Automáticamente un trigger se encarga de registrar los comentarios)
+CALL UpdateExpenseWithSplits(
+    JSON_OBJECT(
+        'name', 'Compras Carnes y Pescado',
+        'description', 'Compras de carnes y pescado',
+        'workspace_id', @workspace_hogar_id,
+        'category_id', @category_supermercado_id,
+        'amount', 150,
+        'expense_date', '2025-05-31 12:00:05',
+        'type', 'SplitEqual',
+        'paid_by_user_id', @user_maria_id,
+        'updated_by_user_id', @user_maria_id
+    ),
+    JSON_ARRAY(
+        JSON_OBJECT(
+            'user_id', @user_maria_id,
+            'amount', 75
+        ),
+        JSON_OBJECT(
+            'user_id', @user_juan_id,
+            'amount', 75
+        )
+    ),
+    @new_expense_id
+);
 
--- Primero cambia el nombre del gasto para que sea mas claro
--- (Automáticamente un trigger se encarga de registrar el comentario)
-UPDATE Expense SET
-    name = 'Compras Carnes y Pescado',
-    updated_by_user_id = @user_maria_id
-WHERE id = @new_expense_id;
+-- Al final los comentarios de la transacción obtenidos mediante una consulto a la tabla ExpenseCommentView son:
 
--- Luego cambia el monto del gasto
--- (Automáticamente un trigger se encarga de registrar el comentario)
-UPDATE Expense SET
-    amount = 150,
-    updated_by_user_id = @user_maria_id
-WHERE id = @new_expense_id;
-
--- Luego cambia el monto de la contribución de Maria
--- (Automáticamente un trigger se encarga de registrar el comentario)
-UPDATE ExpenseSplit SET
-    amount = 75,
-    updated_by_user_id = @user_maria_id
-WHERE expense_id = @new_expense_id
-AND user_id = @user_maria_id;
-
--- Luego cambia el monto de la contribución de Juan
--- (Automáticamente un trigger se encarga de registrar el comentario)
-UPDATE ExpenseSplit SET
-    amount = 75,
-    updated_by_user_id = @user_maria_id
-WHERE expense_id = @new_expense_id
-AND user_id = @user_juan_id;
+-- Maria Gomez modificó esta transacción: El nombre de esta transacción fue cambiado de Compras supermercado a Compras Carnes y Pescado
+-- Maria Gomez modificó esta transacción: La descripción de esta transacción fue cambiada de Compras de supermercado a Compras de carnes y pescado
+-- Maria Gomez modificó esta transacción: El monto de esta transacción fue cambiado de 100.00 a 150.00
+-- Maria Gomez modificó esta transacción: La contribución de Maria Gomez fue cambiada de 50.00 a 75.00
+-- Maria Gomez modificó esta transacción: La contribución de Juan Perez fue cambiada de 50.00 a 75.00

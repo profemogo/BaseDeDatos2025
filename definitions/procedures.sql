@@ -163,3 +163,139 @@ BEGIN
 END$$
 
 DELIMITER ;
+
+
+-- ============================================================
+-- UpdateExpenseWithSplits
+-- ============================================================
+DELIMITER $$
+
+CREATE PROCEDURE UpdateExpenseWithSplits(
+    IN expense JSON,
+    IN splits JSON,
+    IN expense_id INT
+)
+BEGIN
+    DECLARE split_index INT DEFAULT 0;
+    DECLARE splits_count INT;
+    DECLARE total_splits_amount DECIMAL(10,2) DEFAULT 0;
+    
+    -- Start transaction
+    START TRANSACTION;
+    
+    -- Get expense data
+    SET @expense_name = expense->>'$.name';
+    SET @expense_description = expense->>'$.description';
+    SET @expense_workspace_id = expense->>'$.workspace_id';
+    SET @expense_category_id = expense->>'$.category_id';
+    SET @expense_amount = expense->>'$.amount';
+    SET @expense_date = expense->>'$.expense_date';
+    SET @expense_type = expense->>'$.type';
+    SET @expense_paid_by_user_id = expense->>'$.paid_by_user_id';
+    SET @expense_updated_by_user_id = expense->>'$.updated_by_user_id';
+
+    -- Update expense
+    UPDATE Expense SET
+        name = @expense_name,
+        description = @expense_description,
+        workspace_id = @expense_workspace_id,
+        category_id = @expense_category_id,
+        amount = @expense_amount,
+        expense_date = @expense_date,
+        type = @expense_type,
+        paid_by_user_id = @expense_paid_by_user_id,
+        updated_by_user_id = @expense_updated_by_user_id,
+        updated_at = CURRENT_TIMESTAMP
+    WHERE id = expense_id;
+
+    -- Get splits count
+    SET splits_count = JSON_LENGTH(splits);
+
+    -- Validate splits count
+    IF splits_count < 1 THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE 'C0400' 
+        SET MESSAGE_TEXT = 'At least one split is required';
+    END IF;
+
+    -- Update existing splits
+    WHILE split_index < splits_count DO
+        -- Get split data
+        SET @split_user_id = JSON_EXTRACT(splits, CONCAT('$[', split_index, '].user_id'));
+        SET @split_amount = JSON_EXTRACT(splits, CONCAT('$[', split_index, '].amount'));
+        
+        -- Add to total
+        SET total_splits_amount = total_splits_amount + @split_amount;
+
+        -- Validate if Expense type is SinglePayer
+        IF @expense_type = 'SinglePayer' THEN
+            -- Validate that there is only one split
+            IF splits_count > 1 THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SinglePayer type, only one split is allowed';
+            END IF;
+        END IF;
+
+        -- Validate if Expense type is SplitEqual
+        IF @expense_type = 'SplitEqual' THEN
+            -- Calculate expected split amount
+            SET @expected_split_amount = @expense_amount / splits_count;
+            
+            -- Validate that the split amount equals the expected split amount
+            IF @split_amount != @expected_split_amount THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SplitEqual type, the split amount must be equal to the expected split amount';
+            END IF;
+        END IF;
+
+        -- Validate if Expense type is SplitUnequal
+        IF @expense_type = 'SplitUnequal' THEN
+            -- Validate that the split amount is not equal to the expense amount
+            IF @split_amount = @expense_amount THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SplitUnequal type, the split amount must be different from the expense amount';
+            END IF;
+        END IF;
+
+        -- Update split if exists, otherwise insert new split
+        UPDATE ExpenseSplit SET
+            amount = @split_amount,
+            updated_by_user_id = @expense_updated_by_user_id,
+            updated_at = CURRENT_TIMESTAMP
+        WHERE expense_id = expense_id AND user_id = @split_user_id;
+
+        IF ROW_COUNT() = 0 THEN
+            INSERT INTO ExpenseSplit (
+                expense_id,
+                user_id,
+                amount,
+                created_by_user_id,
+                updated_by_user_id
+            ) VALUES (
+                expense_id,
+                @split_user_id,
+                @split_amount,
+                @expense_updated_by_user_id,
+                @expense_updated_by_user_id
+            );
+        END IF;
+        
+        SET split_index = split_index + 1;
+    END WHILE;
+    
+    -- Validate total splits equals expense amount
+    IF total_splits_amount != expense->'$.amount' THEN
+        ROLLBACK;
+        SIGNAL SQLSTATE 'C0400' 
+        SET MESSAGE_TEXT = 'The sum of the splits does not match the total amount of the expense';
+    END IF;
+    
+    -- If we get here, commit the transaction
+    COMMIT;
+
+END$$
+
+DELIMITER ;
