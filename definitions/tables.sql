@@ -111,7 +111,7 @@ CREATE TABLE Expense (
     category_id INTEGER NOT NULL,
     amount DECIMAL(10, 2) NOT NULL,
     expense_date TIMESTAMP NOT NULL,
-    type ENUM('Transfer', 'SplitEqual', 'SplitUnequal', 'SinglePayer') NOT NULL,
+    type ENUM('Transfer', 'SplitEqual', 'SplitUnequal') NOT NULL,
     paid_by_user_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by_user_id INTEGER NOT NULL,
