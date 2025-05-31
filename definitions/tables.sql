@@ -22,7 +22,8 @@ CREATE TABLE User (
     password_changed_at TIMESTAMP NULL,
     email_verified_at TIMESTAMP NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
+    updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL
 );
 
 -- CategoryGroup Table

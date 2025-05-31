@@ -9,6 +9,61 @@
  **/ 
 
 -- ============================================================
+-- CreateDeleteUser
+-- ============================================================
+
+DELIMITER $$
+
+CREATE PROCEDURE CreateDeleteUser(
+    IN user_id INT
+)
+BEGIN
+
+    -- Inicia la transacción
+    START TRANSACTION;
+
+    -- Get name of the user
+    SET @user_name = (SELECT name FROM User WHERE id = user_id);
+
+    -- Anonimiza el usuario
+    UPDATE User SET
+        name = 'Usuario Eliminado',
+        email = CONCAT('usuario_eliminado', id, '@expenseapp.com'),
+        phone = CONCAT('usuario_eliminado', id),
+        password_hash = CONCAT('usuario_eliminado', id),
+        avatar = NULL,
+        deleted_at = CURRENT_TIMESTAMP
+    WHERE id = user_id;
+
+    -- Elimina solo los workspaces donde solo el usuario eliminado es el único miembro
+    DELETE FROM Workspace
+    WHERE id IN (
+        SELECT workspace_id 
+        FROM (
+            SELECT wu.workspace_id
+            FROM WorkspaceUser wu
+            WHERE (
+                SELECT COUNT(*) 
+                FROM WorkspaceUser wu2 
+                WHERE wu2.workspace_id = wu.workspace_id
+            ) = 1
+            AND wu.user_id = user_id
+        ) AS SingleUserWorkspaces
+    );
+
+    -- Actualiza los comentarios donde en nombre del usuario se encuentre
+    UPDATE ExpenseComment SET
+        comment = REPLACE(comment, @user_name, 'Usuario Eliminado')
+    WHERE comment LIKE CONCAT('%', @user_name, '%');
+
+    -- Confirma la transacción
+    COMMIT;
+END$$
+
+DELIMITER ;
+
+
+-- ============================================================
 -- CreateExpenseWithSplits
 -- ============================================================
 
