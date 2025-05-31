@@ -18,6 +18,7 @@ CREATE TRIGGER trigger_before_insert_user
 BEFORE INSERT ON User
 FOR EACH ROW
 BEGIN
+    -- Encrypt password
     SET NEW.password_hash = SHA2(CONCAT(NEW.password_hash, 'my_secret_key'), 256);
 END$$
 DELIMITER ;
@@ -28,7 +29,17 @@ CREATE TRIGGER trigger_before_update_user
 BEFORE UPDATE ON User
 FOR EACH ROW
 BEGIN
-    SET NEW.password_hash = SHA2(CONCAT(NEW.password_hash, 'my_secret_key'), 256);
+    -- Encrypt password
+    IF NEW.password_hash IS NOT NULL THEN
+        SET NEW.password_hash = SHA2(CONCAT(NEW.password_hash, 'my_secret_key'), 256);
+    END IF;
+
+    -- Update expense comments where the user name is mentioned
+    IF NEW.name IS NOT NULL THEN
+        UPDATE ExpenseComment SET
+            comment = REPLACE(comment, OLD.name, NEW.name)
+        WHERE comment LIKE CONCAT('%', OLD.name, '%');
+    END IF;
 END$$
 DELIMITER ;
 
