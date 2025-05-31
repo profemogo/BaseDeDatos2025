@@ -6,21 +6,11 @@ Este proyecto consiste en una base de datos diseñada para el sistema de gestió
 
 ## Estructura de la Base de Datos
 
-La base de datos se compone de las siguientes tablas principales, cada una de las cuales guarda información específica relacionada con las pacientes:
+La base de datos se compone de las siguientes tablas principales
 
-*   **Paciente:** Almacena la información personal básica de cada paciente, como nombre, datos de contacto, fecha de nacimiento, etc.
-*   **Telefono:** Guarda los números de teléfono de contacto de los pacientes, permitiendo múltiples números por paciente.
-*   **Habito:** Registra los hábitos de cada paciente, como el consumo de alcohol, tabaco y café.
-*   **ExamenFisico:** Almacena los resultados de los exámenes físicos realizados a los pacientes.
-*   **Control:** Guarda información sobre los controles médicos realizados a los pacientes, incluyendo datos como la talla, el peso, la tensión arterial, etc.
-*   **TipoInforme:** Define los diferentes tipos de informes que se pueden generar para los pacientes.
-*   **Informe:** Almacena los informes generados a partir de los controles médicos, incluyendo las conclusiones.
-*   **AntecedenteFamiliar:** Registra los antecedentes familiares relevantes para la salud de las pacientes.
-*   **TipoSangre:** Define los diferentes tipos de sangre posibles.
-*   **AntecedentePersonal:** Almacena los antecedentes personales de los pacientes, como enfermedades preexistentes o alergias.
-*   **AntecedenteGinecologico:** Registra los antecedentes ginecológicos de los pacientes, incluyendo información sobre la menstruación, menarquia, menopausia, etc.
-*   **AntecedenteObstetrico:** Almacena los antecedentes obstétricos de los pacientes, como el número de gestas, partos y abortos.
-*   **AntecedenteOtro:** Permite registrar otros antecedentes médicos relevantes para los pacientes.
+[Diagrama](images/tablas.pdf)
+
+Diagrama realizado con ([dbdiagram.io](dbdiagram.io))
 
 ## Implementación en MySQL
 Esta base de datos ha sido implementada utilizando **MySQL**, un sistema de gestión de bases de datos relacional (RDBMS) de código abierto. El archivo `.sql` incluido en este repositorio contiene el esquema completo de la base de datos, incluyendo las definiciones de las tablas, las relaciones entre ellas.
@@ -58,7 +48,7 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
     mysql -u <usuario> -p HistoriasMedicas < db/roles.sql
     mysql -u <usuario> -p HistoriasMedicas < db/indices.sql
     mysql -u <usuario> -p HistoriasMedicas < db/transacciones.sql
-    mysql -u <usuario> -p HistoriasMedicas < db/triggers.sql
+    mysql -u <usuario> -p HistoriasMedicas < db/disparadores.sql
     ```
     Reemplaza `<usuario>` con tu nombre de usuario de MySQL. Se te pedirá que introduzcas la contraseña.
 
