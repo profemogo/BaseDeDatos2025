@@ -65,11 +65,10 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense name from "',
+                'El nombre de esta transacción fue cambiado de ',
                 OLD.name,
-                '" to "',
-                NEW.name,
-                '"'
+                ' a ',
+                NEW.name
             )
         );
     END IF;
@@ -81,11 +80,10 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense description from "',
+                'La descripción de esta transacción fue cambiada de ',
                 OLD.description,
-                '" to "',
-                NEW.description,
-                '"'
+                ' a ',
+                NEW.description
             )
         );
     END IF;
@@ -105,11 +103,10 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense category from "',
-                old_category_name,
-                '" to "',
-                new_category_name,
-                '"'
+                'La categoría de esta transacción fue cambiada de ',
+                @old_category_name,
+                ' a ',
+                @new_category_name
             )
         );
     END IF;
@@ -122,11 +119,10 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense amount from "',
+                'El monto de esta transacción fue cambiado de ',
                 OLD.amount,
-                '" to "',
-                NEW.amount,
-                '"'
+                ' a ',
+                NEW.amount
             )
         );
     END IF;
@@ -139,9 +135,9 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense date from "',
+                'La fecha de esta transacción fue cambiada de ',
                 OLD.expense_date,
-                '" to "',
+                ' a ',
                 NEW.expense_date,
                 '"'
             )
@@ -156,9 +152,9 @@ BEGIN
             NEW.id, 
             NEW.updated_by_user_id, 
             CONCAT(
-                ' changed expense type from "',
+                'El tipo de esta transacción fue cambiado de ',
                 OLD.type,
-                '" to "',
+                ' a ',
                 NEW.type,
                 '"'
             )
