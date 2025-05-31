@@ -30,6 +30,25 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- WorkspaceInvitation Table Triggers
+
+-- Trigger before update (update status)
+DELIMITER $$
+CREATE TRIGGER trigger_before_update_workspace_invitation
+BEFORE UPDATE ON WorkspaceInvitation
+FOR EACH ROW
+BEGIN   
+    -- Update the status
+    IF NEW.status = 'Accepted' THEN
+        INSERT INTO WorkspaceUser (workspace_id, user_id)
+        VALUES (
+            NEW.workspace_id, 
+            (SELECT id FROM User WHERE email = NEW.receiver_email)
+        );
+    END IF;
+END$$
+DELIMITER ;
+
 -- Expense Table Triggers
 
 -- Trigger before update (create comment)
