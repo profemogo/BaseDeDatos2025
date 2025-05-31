@@ -30,8 +30,10 @@ INSERT INTO User (
     '04123456789',
     'mypassword.juan.perez'
 );
+SET @user_juan_id = LAST_INSERT_ID();
 
 -- Juan crea un workspace para registrar los gastos del hogar y decide que usaran Bolivares como moneda
+SET @currency_bolivar_id = (SELECT id FROM Currency WHERE symbol = 'Bs.');
 INSERT INTO Workspace (
     name, 
     description, 
@@ -40,8 +42,10 @@ INSERT INTO Workspace (
 ) VALUES (
     'Hogar', 
     'Gastos comunes del hogar',
-    (SELECT id FROM Currency WHERE symbol = 'Bs.'),
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com'));
+    @currency_bolivar_id,
+    @user_juan_id
+);
+SET @workspace_hogar_id = LAST_INSERT_ID();
 
 -- Juan invita a Maria a su workspace con su correo electronico
 INSERT INTO WorkspaceInvitation (
@@ -49,9 +53,9 @@ INSERT INTO WorkspaceInvitation (
     receiver_email,
     sender_user_id
 ) VALUES (
-    (SELECT id FROM Workspace WHERE name = 'Hogar'),
+    @workspace_hogar_id,
     'maria.gomez@example.com',
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com')
+    @user_juan_id
 );
 
 -- Maria se registra en la app con su correo electronico y contraseña
@@ -67,59 +71,38 @@ INSERT INTO WorkspaceInvitation (
     '04145678912',
     'mypassword.maria.gomez'
 );
+SET @user_maria_id = LAST_INSERT_ID();
 
 -- Maria acepta la invitacion
 -- (Automáticamente un trigger se encarga de agregarla al workspace)
 UPDATE WorkspaceInvitation SET status = 'Accepted' 
 WHERE receiver_email = 'maria.gomez@example.com' 
-AND workspace_id = (SELECT id FROM Workspace WHERE name = 'Hogar');
+AND workspace_id = @workspace_hogar_id;
 
 -- Juan va de compras con Maria y decide registrar el gasto en el workspace
-INSERT INTO Expense (
-    name,
-    description,
-    workspace_id,
-    category_id,
-    amount,
-    expense_date,
-    type,
-    created_by_user_id
-) VALUES (
-    'Compras supermercado',
-    '', 
-    (SELECT id FROM Workspace WHERE name = 'Hogar'),
-    (SELECT id FROM Category WHERE name = 'Supermercado'),
-    100,
-    '2021-01-01',
-    'SplitEqual',
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com')
-);
-SELECT LAST_INSERT_ID() INTO @new_expense_id;
-
--- Maria se queda con la mitad del gasto
-INSERT INTO ExpenseSplit (
-    expense_id,
-    user_id,
-    amount,
-    created_by_user_id
-) VALUES (
-    @new_expense_id,
-    (SELECT id FROM User WHERE email = 'maria.gomez@example.com'),
-    50,
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com')
-);
-
--- Juan se queda con la mitad del gasto
-INSERT INTO ExpenseSplit (
-    expense_id,
-    user_id,
-    amount,
-    created_by_user_id
-) VALUES (
-    @new_expense_id,
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com'),
-    50,
-    (SELECT id FROM User WHERE email = 'juan.perez@example.com')
+SET @category_supermercado_id = (SELECT id FROM Category WHERE name = 'Supermercado');
+CALL CreateExpenseWithSplits(
+    JSON_OBJECT(
+        'name', 'Compras supermercado',
+        'description', 'Compras de supermercado', 
+        'workspace_id', @workspace_hogar_id,
+        'category_id', @category_supermercado_id,
+        'amount', 100,
+        'expense_date', '2025-05-31 12:00:05',
+        'type', 'SplitEqual',
+        'created_by_user_id', @user_juan_id
+    ),
+    JSON_ARRAY(
+        JSON_OBJECT(
+            'user_id', @user_maria_id,
+            'amount', 50
+        ),
+        JSON_OBJECT(
+            'user_id', @user_juan_id,
+            'amount', 50
+        )
+    ),
+    @new_expense_id
 );
 
 -- Sin embargo Juan es muy despistado y registra el pago erróneamente. Por lo que Maria decide corregirlo
@@ -128,28 +111,28 @@ INSERT INTO ExpenseSplit (
 -- (Automáticamente un trigger se encarga de registrar el comentario)
 UPDATE Expense SET
     name = 'Compras Carnes y Pescado',
-    updated_by_user_id = (SELECT id FROM User WHERE email = 'maria.gomez@example.com')
+    updated_by_user_id = @user_maria_id
 WHERE id = @new_expense_id;
 
 -- Luego cambia el monto del gasto
 -- (Automáticamente un trigger se encarga de registrar el comentario)
 UPDATE Expense SET
     amount = 150,
-    updated_by_user_id = (SELECT id FROM User WHERE email = 'maria.gomez@example.com')
+    updated_by_user_id = @user_maria_id
 WHERE id = @new_expense_id;
 
 -- Luego cambia el monto de la contribución de Maria
 -- (Automáticamente un trigger se encarga de registrar el comentario)
 UPDATE ExpenseSplit SET
     amount = 75,
-    updated_by_user_id = (SELECT id FROM User WHERE email = 'maria.gomez@example.com')
+    updated_by_user_id = @user_maria_id
 WHERE expense_id = @new_expense_id
-AND user_id = (SELECT id FROM User WHERE email = 'maria.gomez@example.com');
+AND user_id = @user_maria_id;
 
 -- Luego cambia el monto de la contribución de Juan
 -- (Automáticamente un trigger se encarga de registrar el comentario)
 UPDATE ExpenseSplit SET
     amount = 75,
-    updated_by_user_id = (SELECT id FROM User WHERE email = 'maria.gomez@example.com')
+    updated_by_user_id = @user_maria_id
 WHERE expense_id = @new_expense_id
-AND user_id = (SELECT id FROM User WHERE email = 'juan.perez@example.com');
+AND user_id = @user_juan_id;

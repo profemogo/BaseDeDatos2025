@@ -35,3 +35,6 @@ mysql -u $DbUser -p$DbPassword $DbName < .\definitions\triggers.sql
 
 # Initialize the views
 mysql -u $DbUser -p$DbPassword $DbName < .\definitions\views.sql
+
+# Initialize the procedures
+mysql -u $DbUser -p$DbPassword $DbName < .\definitions\procedures.sql
