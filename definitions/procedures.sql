@@ -24,11 +24,11 @@ BEGIN
     DECLARE split_index INTEGER DEFAULT 0;
     DECLARE splits_count INTEGER;
     
-    -- Start transaction
+    -- Inicia la transacción
     START TRANSACTION;
 
     -- ============================================================
-    -- Validate expense is a valid JSON object
+    -- Valida que el gasto sea un objeto JSON válido
     -- ============================================================
 
     IF JSON_TYPE(expense) != 'OBJECT' THEN
@@ -37,7 +37,7 @@ BEGIN
     END IF;
 
     -- ============================================================
-    -- Validate expense splits is a valid JSON array
+    -- Valida que los splits del gasto sean un array JSON válido
     -- ============================================================
 
     IF JSON_TYPE(expense_splits) != 'ARRAY' THEN
@@ -46,7 +46,7 @@ BEGIN
     END IF;
 
     -- ============================================================
-    -- Insert the expense
+    -- Inserta el gasto
     -- ============================================================
 
     SET @expense_name = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.name'));
@@ -83,29 +83,29 @@ BEGIN
     SET new_expense_id = LAST_INSERT_ID();
 
     -- ============================================================
-    -- Insert the expense splits
+    -- Inserta los splits del gasto
     -- ============================================================
 
     SET splits_count = JSON_LENGTH(expense_splits);
     
     splits_loop: WHILE split_index < splits_count DO
-        -- Get the split user id
+        -- Obtiene el id del usuario del split
         SET @split_user_id = JSON_UNQUOTE(JSON_EXTRACT(expense_splits, CONCAT('$[', split_index, '].user_id')));
         SET @split_amount = JSON_UNQUOTE(JSON_EXTRACT(expense_splits, CONCAT('$[', split_index, '].amount')));
 
-        -- Add to running total
+        -- Suma al total acumulado
         SET total_splits_amount = total_splits_amount + @split_amount;
 
-        -- Validate split amount is not negative
+        -- Valida que el monto del split no sea negativo
         IF @split_amount < 0 THEN
             ROLLBACK;
             SIGNAL SQLSTATE 'C0400' 
-            SET MESSAGE_TEXT = 'The split amount is negative';
+            SET MESSAGE_TEXT = 'El monto del split es negativo';
         END IF;
 
-        -- Validate if Expense type is Transfer
+        -- Valida si el tipo de gasto es Transferencia
         IF @expense_type = 'Transfer' THEN
-            -- Validate that the split amount is equal to the expense amount
+            -- Valida que el monto del split sea igual al monto del gasto
             IF @split_amount != @expense_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -113,10 +113,10 @@ BEGIN
             END IF;
         END IF;
 
-        -- Validate if Expense type is SplitEqual
+        -- Valida si el tipo de gasto es División Igual
         IF @expense_type = 'SplitEqual' THEN
             SET @expected_split_amount = @expense_amount / splits_count;
-            -- Validate that the split amount is equal to the expense amount
+            -- Valida que el monto del split sea igual al monto esperado
             IF @split_amount != @expected_split_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -124,9 +124,9 @@ BEGIN
             END IF;
         END IF;
 
-        -- Validate if Expense type is SplitUnequal
+        -- Valida si el tipo de gasto es División Desigual
         IF @expense_type = 'SplitUnequal' THEN
-            -- Validate that the split amount is not equal to the expense amount
+            -- Valida que el monto del split no sea igual al monto del gasto
             IF @split_amount = @expense_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -134,7 +134,7 @@ BEGIN
             END IF;
         END IF;
 
-        -- Insert split
+        -- Inserta el split
         INSERT INTO ExpenseSplit (
             expense_id,
             user_id,
@@ -150,14 +150,14 @@ BEGIN
         SET split_index = split_index + 1;
     END WHILE;
     
-    -- Validate total splits equals expense amount
+    -- Valida que el total de los splits sea igual al monto del gasto
     IF total_splits_amount != expense->'$.amount' THEN
         ROLLBACK;
         SIGNAL SQLSTATE 'C0400' 
         SET MESSAGE_TEXT = 'The sum of the splits does not match the total amount of the expense';
     END IF;
     
-    -- If we get here, commit the transaction
+    -- Si llegamos aquí, confirma la transacción
     COMMIT;
 
 END$$
@@ -180,10 +180,10 @@ BEGIN
     DECLARE splits_count INT;
     DECLARE total_splits_amount DECIMAL(10,2) DEFAULT 0;
     
-    -- Start transaction
+    -- Inicia la transacción
     START TRANSACTION;
     
-    -- Get expense data
+    -- Obtiene los datos del gasto
     SET @expense_name = expense->>'$.name';
     SET @expense_description = expense->>'$.description';
     SET @expense_workspace_id = expense->>'$.workspace_id';
@@ -194,7 +194,7 @@ BEGIN
     SET @expense_paid_by_user_id = expense->>'$.paid_by_user_id';
     SET @expense_updated_by_user_id = expense->>'$.updated_by_user_id';
 
-    -- Update expense
+    -- Actualiza el gasto
     UPDATE Expense SET
         name = @expense_name,
         description = @expense_description,
@@ -208,28 +208,28 @@ BEGIN
         updated_at = CURRENT_TIMESTAMP
     WHERE id = expense_id;
 
-    -- Get splits count
+    -- Obtiene el número de divisiones
     SET splits_count = JSON_LENGTH(splits);
 
-    -- Validate splits count
+    -- Valida el número de divisiones
     IF splits_count < 1 THEN
         ROLLBACK;
         SIGNAL SQLSTATE 'C0400' 
-        SET MESSAGE_TEXT = 'At least one split is required';
+        SET MESSAGE_TEXT = 'At least one expense split is required';
     END IF;
 
-    -- Update existing splits
+    -- Actualiza las divisiones existentes
     WHILE split_index < splits_count DO
-        -- Get split data
+        -- Obtiene los datos de la división
         SET @split_user_id = JSON_EXTRACT(splits, CONCAT('$[', split_index, '].user_id'));
         SET @split_amount = JSON_EXTRACT(splits, CONCAT('$[', split_index, '].amount'));
         
-        -- Add to total
+        -- Suma al total
         SET total_splits_amount = total_splits_amount + @split_amount;
 
-        -- Validate if Expense type is SinglePayer
+        -- Valida si el tipo de gasto es SinglePayer
         IF @expense_type = 'SinglePayer' THEN
-            -- Validate that there is only one split
+            -- Valida que solo haya una división
             IF splits_count > 1 THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -237,12 +237,12 @@ BEGIN
             END IF;
         END IF;
 
-        -- Validate if Expense type is SplitEqual
+        -- Valida si el tipo de gasto es SplitEqual
         IF @expense_type = 'SplitEqual' THEN
-            -- Calculate expected split amount
+            -- Calcula el monto esperado de la división
             SET @expected_split_amount = @expense_amount / splits_count;
             
-            -- Validate that the split amount equals the expected split amount
+            -- Valida que el monto de la división sea igual al monto esperado
             IF @split_amount != @expected_split_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -250,9 +250,9 @@ BEGIN
             END IF;
         END IF;
 
-        -- Validate if Expense type is SplitUnequal
+        -- Valida si el tipo de gasto es SplitUnequal
         IF @expense_type = 'SplitUnequal' THEN
-            -- Validate that the split amount is not equal to the expense amount
+            -- Valida que el monto de la división no sea igual al monto del gasto
             IF @split_amount = @expense_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
@@ -260,7 +260,7 @@ BEGIN
             END IF;
         END IF;
 
-        -- Update split if exists, otherwise insert new split
+        -- Actualiza la división si existe, sino inserta una nueva
         UPDATE ExpenseSplit SET
             amount = @split_amount,
             updated_by_user_id = @expense_updated_by_user_id,
@@ -286,14 +286,14 @@ BEGIN
         SET split_index = split_index + 1;
     END WHILE;
     
-    -- Validate total splits equals expense amount
+    -- Valida que el total de las divisiones sea igual al monto del gasto
     IF total_splits_amount != expense->'$.amount' THEN
         ROLLBACK;
         SIGNAL SQLSTATE 'C0400' 
         SET MESSAGE_TEXT = 'The sum of the splits does not match the total amount of the expense';
     END IF;
     
-    -- If we get here, commit the transaction
+    -- Si llegamos aquí, confirma la transacción
     COMMIT;
 
 END$$

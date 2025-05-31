@@ -1,6 +1,7 @@
 -- ============================================================
 -- GetUserWorkspaceBalance
 -- ============================================================
+
 DELIMITER $$
 
 CREATE FUNCTION GetUserWorkspaceBalance(
@@ -16,7 +17,7 @@ BEGIN
     SET @workspace_id = JSON_UNQUOTE(JSON_EXTRACT(params, '$.workspace_id'));
     SET @user_id = JSON_UNQUOTE(JSON_EXTRACT(params, '$.user_id'));
 
-    -- Calculate how much money others owe to the user
+    -- Calcula cuánto dinero le deben otros al usuario
     SELECT
         COALESCE(SUM(es.amount), 0) INTO @money_others_owe
     FROM Expense e
@@ -26,7 +27,7 @@ BEGIN
     AND e.paid_by_user_id = @user_id
     AND es.user_id != @user_id;
 
-    -- Calculate how much money the user owes to others
+    -- Calcula cuánto dinero debe el usuario a otros
     SELECT 
         COALESCE(SUM(es.amount), 0) INTO @money_user_owes
     FROM Expense e
@@ -36,10 +37,10 @@ BEGIN
     AND e.paid_by_user_id != @user_id
     AND es.user_id = @user_id; 
 
-    -- Calculate the total balance
+    -- Calcula el balance total
     SET total_balance = @money_others_owe - @money_user_owes;
 
-    -- Determine the status
+    -- Determina el estado
     IF total_balance > 0 THEN
         SET status = 'MoneyOwedToYou';
     ELSEIF total_balance < 0 THEN 
@@ -48,10 +49,10 @@ BEGIN
         SET status = 'Settled';
     END IF;
 
-    -- Build the details of who owes to whom
+    -- Construye los detalles de quién debe a quién
     SET details = '';
 
-    -- Add details of who owes to the user
+    -- Agrega detalles de quién le debe al usuario
     SELECT GROUP_CONCAT(
         CONCAT(u.name, ' te debe ', es.amount, ' Bs.')
         SEPARATOR '\n'
@@ -69,7 +70,7 @@ BEGIN
         SET details = CONCAT(details, @owe_details, '\n');
     END IF;
 
-    -- Add details of who the user owes to
+    -- Agrega detalles de a quién le debe el usuario
     SELECT GROUP_CONCAT(
         CONCAT('Le debes ', es.amount, ' Bs. a ', u.name)
         SEPARATOR '\n'
@@ -87,12 +88,12 @@ BEGIN
         SET details = CONCAT(details, @owes_details);
     END IF;
 
-    -- If there are no details, it means that all accounts are settled
+    -- Si no hay detalles, significa que todas las cuentas están en paz
     IF details = '' THEN
         SET details = 'Todas las cuentas están en paz';
     END IF;
 
-    -- Return a JSON with all the information
+    -- Retorna un JSON con toda la información
     RETURN JSON_OBJECT(
         'workspace_id', @workspace_id,
         'user_id', @user_id,
