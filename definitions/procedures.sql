@@ -92,7 +92,51 @@ BEGIN
 
         -- Add to running total
         SET total_splits_amount = total_splits_amount + @split_amount;
-        
+
+        -- Validate split amount is not negative
+        IF @split_amount < 0 THEN
+            ROLLBACK;
+            SIGNAL SQLSTATE 'C0400' 
+            SET MESSAGE_TEXT = 'The split amount is negative';
+        END IF;
+
+        -- Validate if Expense type is SinglePayer or Transfer
+        IF @expense_type = 'SinglePayer' OR @expense_type = 'Transfer' THEN
+            -- Validate that the split amount is equal to the expense amount
+            IF @split_amount != @expense_amount THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SinglePayer or Transfer type, the split amount must be equal to the expense amount';
+            END IF;
+            -- Validate that there is only one split
+            IF splits_count > 1 THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SinglePayer or Transfer type, there must be only one split';
+            END IF;
+        END IF;
+
+        -- Validate if Expense type is SplitEqual
+        IF @expense_type = 'SplitEqual' THEN
+            SET @expected_split_amount = @expense_amount / splits_count;
+            -- Validate that the split amount is equal to the expense amount
+            IF @split_amount != @expected_split_amount THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SplitEqual type, the split amount must be equal to the expected split amount';
+            END IF;
+        END IF;
+
+        -- Validate if Expense type is SplitUnequal
+        IF @expense_type = 'SplitUnequal' THEN
+            -- Validate that the split amount is not equal to the expense amount
+            IF @split_amount = @expense_amount THEN
+                ROLLBACK;
+                SIGNAL SQLSTATE 'C0400' 
+                SET MESSAGE_TEXT = 'For SplitUnequal type, the split amount must be different from the expense amount';
+            END IF;
+        END IF;
+
         -- Insert split
         INSERT INTO ExpenseSplit (
             expense_id,
