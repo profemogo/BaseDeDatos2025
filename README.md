@@ -8,7 +8,7 @@ Este proyecto consiste en una base de datos diseñada para el sistema de gestió
 
 La base de datos se compone de las siguientes tablas principales
 
-[Diagrama](diagrama/tablas.pdf)
+[Click para ver el diagrama](diagrama/tablas.pdf)
 
 Diagrama realizado con ([dbdiagram.io](dbdiagram.io))
 
