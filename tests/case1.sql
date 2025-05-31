@@ -135,10 +135,32 @@ CALL UpdateExpenseWithSplits(
     @new_expense_id
 );
 
--- Finalmente los comentarios de la transacción obtenidos mediante una consulta a la vista ExpenseCommentView son:
+-- Los comentarios de la transacción a este punto son los siguientes (obtenidos mediante una consulta a la vista ExpenseCommentView):
 
 -- Maria Gomez modificó esta transacción: El nombre de esta transacción fue cambiado de Compras supermercado a Compras Carnes y Pescado
 -- Maria Gomez modificó esta transacción: La descripción de esta transacción fue cambiada de Compras de supermercado a Compras de carnes y pescado
 -- Maria Gomez modificó esta transacción: El monto de esta transacción fue cambiado de 100.00 a 150.00
 -- Maria Gomez modificó esta transacción: La contribución de Maria Gomez fue cambiada de 50.00 a 75.00
 -- Maria Gomez modificó esta transacción: La contribución de Juan Perez fue cambiada de 50.00 a 75.00
+
+-- Finalmente JuanOB le paga a Maria la deuda de 75 Bs.
+CALL CreateExpenseWithSplits(
+    JSON_OBJECT(
+        'name', 'Pago de deuda',
+        'description', 'Pago de deuda',
+        'workspace_id', @workspace_hogar_id,
+        'category_id', @category_supermercado_id,
+        'amount', 75,
+        'expense_date', '2025-05-31 12:00:05',
+        'type', 'Transfer',
+        'paid_by_user_id', @user_juan_id,
+        'created_by_user_id', @user_maria_id
+    ),
+    JSON_ARRAY(
+        JSON_OBJECT(
+            'user_id', @user_maria_id,
+            'amount', 75
+        )
+    ),
+    @new_expense_id
+);
