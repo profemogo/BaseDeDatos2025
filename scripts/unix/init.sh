@@ -39,3 +39,6 @@ mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/views.sql
 
 # Initialize the procedures
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/procedures.sql
+
+# Initialize the functions
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./definitions/functions.sql

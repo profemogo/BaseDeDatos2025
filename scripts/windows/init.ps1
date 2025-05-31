@@ -38,3 +38,9 @@ mysql -u $DbUser -p$DbPassword $DbName < .\definitions\views.sql
 
 # Initialize the procedures
 mysql -u $DbUser -p$DbPassword $DbName < .\definitions\procedures.sql
+
+# Initialize the functions
+mysql -u $DbUser -p$DbPassword $DbName < .\definitions\functions.sql
+
+# Initialize the security
+mysql -u $DbUser -p$DbPassword $DbName < .\definitions\security.sql
