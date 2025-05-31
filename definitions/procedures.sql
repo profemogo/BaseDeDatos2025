@@ -103,19 +103,13 @@ BEGIN
             SET MESSAGE_TEXT = 'The split amount is negative';
         END IF;
 
-        -- Validate if Expense type is SinglePayer or Transfer
-        IF @expense_type = 'SinglePayer' OR @expense_type = 'Transfer' THEN
+        -- Validate if Expense type is Transfer
+        IF @expense_type = 'Transfer' THEN
             -- Validate that the split amount is equal to the expense amount
             IF @split_amount != @expense_amount THEN
                 ROLLBACK;
                 SIGNAL SQLSTATE 'C0400' 
-                SET MESSAGE_TEXT = 'For SinglePayer or Transfer type, the split amount must be equal to the expense amount';
-            END IF;
-            -- Validate that there is only one split
-            IF splits_count > 1 THEN
-                ROLLBACK;
-                SIGNAL SQLSTATE 'C0400' 
-                SET MESSAGE_TEXT = 'For SinglePayer or Transfer type, there must be only one split';
+                SET MESSAGE_TEXT = 'For Transfer type, the split amount must be equal to the expense amount';
             END IF;
         END IF;
 
