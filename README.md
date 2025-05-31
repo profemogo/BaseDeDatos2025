@@ -20,9 +20,10 @@ Para utilizar esta base de datos en un entorno MySQL, sigue estos pasos:
 
 1.  **Instalar MySQL:** Si aún no tienes MySQL instalado, descárgalo e instálalo desde el sitio web oficial de MySQL ([https://www.mysql.com/](https://www.mysql.com/)).
 
-2. **Clonar este Repositorio**
+2. **Clonar este Repositorio y entrar a la carpeta**
     ```bash
     git clone <URL a este repositorio>
+    cd BaseDeDatos2025
     ```
     Cambiate a esta rama
     ```bash
