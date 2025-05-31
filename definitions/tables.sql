@@ -67,8 +67,12 @@ CREATE TABLE Workspace (
     image VARCHAR(2048),
     currency_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    created_by_user_id INTEGER NOT NULL,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
-    FOREIGN KEY (currency_id) REFERENCES Currency(id)
+    updated_by_user_id INTEGER,
+    FOREIGN KEY (currency_id) REFERENCES Currency(id),
+    FOREIGN KEY (created_by_user_id) REFERENCES User(id),
+    FOREIGN KEY (updated_by_user_id) REFERENCES User(id)
 );
 
 -- WorkspaceInvitation Table
@@ -78,7 +82,7 @@ CREATE TABLE WorkspaceInvitation (
     workspace_id INTEGER NOT NULL,
     receiver_email VARCHAR(100) NOT NULL,
     sender_user_id INTEGER NOT NULL,
-    status VARCHAR(100) NOT NULL,
+    status ENUM('Pending', 'Accepted', 'Rejected') DEFAULT 'Pending' NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     FOREIGN KEY (workspace_id) REFERENCES Workspace(id),
@@ -128,7 +132,7 @@ CREATE TABLE ExpenseSplit (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by_user_id INTEGER NOT NULL,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
-    updated_by_user_id INTEGER NOT NULL,
+    updated_by_user_id INTEGER,
     FOREIGN KEY (expense_id) REFERENCES Expense(id),
     FOREIGN KEY (user_id) REFERENCES User(id),
     FOREIGN KEY (created_by_user_id) REFERENCES User(id),
