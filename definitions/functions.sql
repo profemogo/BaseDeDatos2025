@@ -17,7 +17,7 @@ BEGIN
     SET @workspace_id = JSON_UNQUOTE(JSON_EXTRACT(params, '$.workspace_id'));
     SET @user_id = JSON_UNQUOTE(JSON_EXTRACT(params, '$.user_id'));
 
-    -- Calcula cuánto dinero le deben otros al usuario
+    -- Calculate how much money others owe to the user
     SELECT
         COALESCE(SUM(es.amount), 0) INTO @money_others_owe
     FROM Expense e
@@ -27,7 +27,7 @@ BEGIN
     AND e.paid_by_user_id = @user_id
     AND es.user_id != @user_id;
 
-    -- Calcula cuánto dinero debe el usuario a otros
+    -- Calculate how much money the user owes to others
     SELECT 
         COALESCE(SUM(es.amount), 0) INTO @money_user_owes
     FROM Expense e
@@ -37,14 +37,14 @@ BEGIN
     AND e.paid_by_user_id != @user_id
     AND es.user_id = @user_id; 
 
-    -- Calcula el balance total
+    -- Calculate total balance
     SET total_balance = @money_others_owe - @money_user_owes;
 
-    -- Determina el estado
+    -- Determine status
     IF total_balance > 0 THEN
         SET status = 'MoneyOwedToYou';
 
-        -- Agrega detalles de quién le debe al usuario
+        -- Add details about who owes money to the user
         SELECT GROUP_CONCAT(
             CONCAT(u.name, ' te debe ', es.amount, ' Bs.')
             SEPARATOR '\n'
@@ -65,7 +65,7 @@ BEGIN
     ELSEIF total_balance < 0 THEN 
         SET status = 'MoneyOwedToOthers';
 
-         -- Agrega detalles de a quién le debe el usuario
+        -- Add details about who the user owes money to
         SELECT GROUP_CONCAT(
             CONCAT('Le debes ', es.amount, ' Bs. a ', u.name)
             SEPARATOR '\n'
@@ -86,11 +86,11 @@ BEGIN
     ELSE
         SET status = 'Settled';
 
-        -- Si no hay detalles, significa que todas las cuentas están en paz
+        -- If there are no details, it means all accounts are settled
         SET details = 'Todas las cuentas están en paz';
     END IF;
 
-    -- Retorna un JSON con toda la información
+    -- Return a JSON with all the information
     RETURN JSON_OBJECT(
         'workspace_id', @workspace_id,
         'user_id', @user_id,
