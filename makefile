@@ -1,28 +1,32 @@
-DB_NAME=event_db
-DB_USER=root
-DB_PASSWORD=password
-MYSQL=mysql -u $(DB_USER) -p$(DB_PASSWORD) $(DB_NAME)
+# Parámetros por defecto
+DB_USER ?= root
+DB_PASS ?= root
+DB_NAME ?= EventDB
+DB_HOST ?= localhost
 
-.PHONY: init recreate clean
+# Crear toda la base de datos desde cero
+create_db:
+	@echo "Creando base de datos..."
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) -e "DROP DATABASE IF EXISTS $(DB_NAME); CREATE DATABASE $(DB_NAME);"
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/event_db.sql
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/indexes.sql
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/triggers.sql
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/procedures_and_functions.sql
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/views.sql
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/structure/roles.sql
 
-# Crear base de datos y cargar todos los scripts
-init:
-	@echo "📦 Creando base de datos '$(DB_NAME)'..."
-	@mysql -u $(DB_USER) -p$(DB_PASSWORD) -e "DROP DATABASE IF EXISTS $(DB_NAME); CREATE DATABASE $(DB_NAME);"
-	@echo "Ejecutando event_db.sql"
-	@$(MYSQL) < event_db.sql
-	@echo "Ejecutando indexes.sql"
-	@$(MYSQL) < indexes.sql
-	@echo "Ejecutando procedures_and_functions.sql"
-	@$(MYSQL) < procedures_and_functions.sql
-	@echo "Ejecutando triggers.sql"
-	@$(MYSQL) < triggers.sql
-	@echo "Ejecutando views.sql"
-	@$(MYSQL) < views.sql
-	@echo "Base de datos '$(DB_NAME)' lista."
+# Cargar datos de prueba
+load_test_data:
+	@echo "Cargando datos de prueba..."
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) $(DB_NAME) < sql/test/testing_data.sql
 
-# Eliminar completamente la base de datos
-clean:
-	@echo "Borrando base de datos..."
-	@mysql -u $(DB_USER) -p$(DB_PASSWORD) -e "DROP DATABASE IF EXISTS $(DB_NAME);"
-	@echo "Eliminada."
+# Eliminar la base de datos
+drop_db:
+	@echo "Eliminando base de datos..."
+	mysql -u $(DB_USER) -p$(DB_PASS) -h $(DB_HOST) -e "DROP DATABASE IF EXISTS $(DB_NAME);"
+
+# Limpiar base de datos (eliminar y crear de nuevo)
+clean_db: drop_db create_db
+
+# Crear y cargar datos
+all: create_db load_test_data
