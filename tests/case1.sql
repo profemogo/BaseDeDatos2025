@@ -135,7 +135,7 @@ CALL UpdateExpenseWithSplits(
     @new_expense_id
 );
 
--- Al final los comentarios de la transacción obtenidos mediante una consulto a la tabla ExpenseCommentView son:
+-- Finalmente los comentarios de la transacción obtenidos mediante una consulta a la vista ExpenseCommentView son:
 
 -- Maria Gomez modificó esta transacción: El nombre de esta transacción fue cambiado de Compras supermercado a Compras Carnes y Pescado
 -- Maria Gomez modificó esta transacción: La descripción de esta transacción fue cambiada de Compras de supermercado a Compras de carnes y pescado

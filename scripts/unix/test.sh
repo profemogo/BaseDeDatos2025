@@ -20,4 +20,4 @@ DB_USER=$2
 DB_PASSWORD=$3
 
 # Test the database
-mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./tests/init.sql
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./tests/case1.sql

@@ -19,4 +19,4 @@ param(
 )
 
 # Test the database
-mysql -u $DbUser -p$DbPassword $DbName < .\tests\init.sql
+mysql -u $DbUser -p$DbPassword $DbName < .\tests\case1.sql
