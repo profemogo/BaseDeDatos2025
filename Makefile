@@ -1,7 +1,11 @@
 DB_USER ?= root
-DB_NAME ?= SocialNetworkDB
+DB_NAME := SocialNetworkDB#Some adjustments need to be made to the project if you want to change this name.
 DB_PASS ?=
 DB_HOST ?= localhost
+
+ifneq ($(origin DB_NAME), file)
+	$(error DB_NAME cannot be edited)
+endif
 
 STRUCTURE_DIR := sql/structure
 TEST_DATA_DIR := sql/test
@@ -83,10 +87,8 @@ help:
 	@echo "  make help             - Show this help menu"
 	@echo -e "\n\033[0;36mCustomizable variables (override with VAR=value):\033[0m"
 	@echo "  DB_USER=username     - MySQL username (default: root)"
-	@echo "  DB_NAME=dbname       - Database name (default: SocialNetworkDB)"
-	@echo "  DB_PASS=password     - MySQL password (not default defined)"
+	@echo "  DB_PASS=password     - MySQL password (no default defined)"
 	@echo "  DB_HOST=host         - MySQL host (default: localhost)"
 	@echo -e "\n\033[0;36mExamples:\033[0m"
 	@echo "  make create_db DB_USER=admin DB_PASS=secure123"
-	@echo "  make clean_db DB_NAME=test_db"
 	@echo "  make load_test_data DB_HOST=127.0.0.1"

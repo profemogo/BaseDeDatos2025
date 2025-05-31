@@ -171,6 +171,11 @@ sudo apt-get install make
    make drop_db
    ```
 
+5. **Ver Guia**:
+   ```bash
+   make help
+   ```
+
 ### Parámetros del Makefile
 Puedes especificar parámetros personalizados:
 ```bash
