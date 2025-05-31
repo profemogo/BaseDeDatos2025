@@ -43,53 +43,50 @@ BEGIN
     -- Determina el estado
     IF total_balance > 0 THEN
         SET status = 'MoneyOwedToYou';
+
+        -- Agrega detalles de quién le debe al usuario
+        SELECT GROUP_CONCAT(
+            CONCAT(u.name, ' te debe ', es.amount, ' Bs.')
+            SEPARATOR '\n'
+        ) INTO @owe_details
+        FROM Expense e
+        JOIN ExpenseSplit es
+        ON es.expense_id = e.id
+        JOIN User u
+        ON u.id = es.user_id
+        WHERE e.workspace_id = @workspace_id 
+        AND e.paid_by_user_id = @user_id
+        AND es.user_id != @user_id;
+
+        IF @owe_details IS NOT NULL THEN
+            SET details = CONCAT(details, @owe_details, '\n');
+        END IF;
+
     ELSEIF total_balance < 0 THEN 
         SET status = 'MoneyOwedToOthers';
+
+         -- Agrega detalles de a quién le debe el usuario
+        SELECT GROUP_CONCAT(
+            CONCAT('Le debes ', es.amount, ' Bs. a ', u.name)
+            SEPARATOR '\n'
+        ) INTO @owes_details
+        FROM Expense e
+        JOIN ExpenseSplit es
+        ON es.expense_id = e.id
+        JOIN User u
+        ON u.id = e.paid_by_user_id
+        WHERE e.workspace_id = @workspace_id
+        AND es.user_id = @user_id 
+        AND e.paid_by_user_id != @user_id;
+
+        IF @owes_details IS NOT NULL THEN
+            SET details = CONCAT(details, @owes_details);
+        END IF;
+
     ELSE
         SET status = 'Settled';
-    END IF;
 
-    -- Construye los detalles de quién debe a quién
-    SET details = '';
-
-    -- Agrega detalles de quién le debe al usuario
-    SELECT GROUP_CONCAT(
-        CONCAT(u.name, ' te debe ', es.amount, ' Bs.')
-        SEPARATOR '\n'
-    ) INTO @owe_details
-    FROM Expense e
-    JOIN ExpenseSplit es
-    ON es.expense_id = e.id
-    JOIN User u
-    ON u.id = es.user_id
-    WHERE e.workspace_id = @workspace_id 
-    AND e.paid_by_user_id = @user_id
-    AND es.user_id != @user_id;
-
-    IF @owe_details IS NOT NULL THEN
-        SET details = CONCAT(details, @owe_details, '\n');
-    END IF;
-
-    -- Agrega detalles de a quién le debe el usuario
-    SELECT GROUP_CONCAT(
-        CONCAT('Le debes ', es.amount, ' Bs. a ', u.name)
-        SEPARATOR '\n'
-    ) INTO @owes_details
-    FROM Expense e
-    JOIN ExpenseSplit es
-    ON es.expense_id = e.id
-    JOIN User u
-    ON u.id = e.paid_by_user_id
-    WHERE e.workspace_id = @workspace_id
-    AND es.user_id = @user_id 
-    AND e.paid_by_user_id != @user_id;
-
-    IF @owes_details IS NOT NULL THEN
-        SET details = CONCAT(details, @owes_details);
-    END IF;
-
-    -- Si no hay detalles, significa que todas las cuentas están en paz
-    IF details = '' THEN
+        -- Si no hay detalles, significa que todas las cuentas están en paz
         SET details = 'Todas las cuentas están en paz';
     END IF;
 
