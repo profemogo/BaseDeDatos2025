@@ -1,13 +1,30 @@
 #!/bin/bash
 
-
 echo "Por favor, ingresa la contraseña de MySQL cuando se solicite:"
 read -s MYSQL_PASSWORD
 
+# Crear la base de datos si no existe
+echo "Creando la base de datos habit_tracker si no existe..."
+mysql -u root -p"$MYSQL_PASSWORD" -e "CREATE DATABASE IF NOT EXISTS habit_tracker;"
+if [ $? -eq 0 ]; then
+    echo "✓ Base de datos creada o ya existente"
+else
+    echo "✗ Error al crear la base de datos"
+    exit 1
+fi
+
+# Seleccionar la base de datos
+mysql -u root -p"$MYSQL_PASSWORD" -e "USE habit_tracker;"
+if [ $? -eq 0 ]; then
+    echo "✓ Base de datos seleccionada correctamente"
+else
+    echo "✗ Error al seleccionar la base de datos"
+    exit 1
+fi
 
 run_sql() {
     echo "Ejecutando $1..."
-    mysql -u root -p"$MYSQL_PASSWORD" < "$1"
+    mysql -u root -p"$MYSQL_PASSWORD" habit_tracker < "$1"
     if [ $? -eq 0 ]; then
         echo "✓ $1 ejecutado exitosamente"
     else
