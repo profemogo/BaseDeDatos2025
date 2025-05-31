@@ -9,7 +9,7 @@
  **/ 
 
  /**
-  * Escenario:
+  * Escenario 1:
   *
   * Juan Perez y Maria Gomez son un matrimonio y comparten los gastos del hogar. Sin embargo no tener un 
   * control adecuado de sus finanzas hacen que se sientan incomodos al no saber cuanto gastan en cada cosa. Y 

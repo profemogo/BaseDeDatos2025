@@ -21,5 +21,8 @@ DB_PASSWORD=$3
 
 # Test the database
 echo "Testing database"
+echo "Testing case 1"
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./tests/case1.sql
+echo "Testing case 2"
+mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./tests/case2.sql
 echo "Tests completed successfully"
