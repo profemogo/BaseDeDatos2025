@@ -50,6 +50,23 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- Trigger before delete (delete workspace user, invitations and expenses)
+DELIMITER $$
+CREATE TRIGGER trigger_before_delete_workspace
+BEFORE DELETE ON Workspace
+FOR EACH ROW
+BEGIN
+    -- Delete workspace users
+    DELETE FROM WorkspaceUser WHERE workspace_id = OLD.id;
+
+    -- Delete workspace invitations
+    DELETE FROM WorkspaceInvitation WHERE workspace_id = OLD.id;
+
+    -- Delete expenses
+    DELETE FROM Expense WHERE workspace_id = OLD.id;
+END$$
+DELIMITER ;
+
 -- ============================================================
 -- WorkspaceInvitation Table Triggers
 -- ============================================================
@@ -162,8 +179,7 @@ BEGIN
                 'La fecha de esta transacción fue cambiada de ',
                 OLD.expense_date,
                 ' a ',
-                NEW.expense_date,
-                '"'
+                NEW.expense_date
             )
         );
     END IF;
@@ -179,8 +195,7 @@ BEGIN
                 'El tipo de esta transacción fue cambiado de ',
                 OLD.type,
                 ' a ',
-                NEW.type,
-                '"'
+                NEW.type
             )
         );
     END IF;
@@ -208,6 +223,20 @@ BEGIN
         );
     END IF;
 
+END$$
+DELIMITER ;
+
+-- Trigger before delete (delete expense comments and splits)
+DELIMITER $$
+CREATE TRIGGER trigger_before_delete_expense
+BEFORE DELETE ON Expense
+FOR EACH ROW
+BEGIN
+    -- Delete expense comments
+    DELETE FROM ExpenseComment WHERE expense_id = OLD.id;
+
+    -- Delete expense splits
+    DELETE FROM ExpenseSplit WHERE expense_id = OLD.id;
 END$$
 DELIMITER ;
 
@@ -244,4 +273,3 @@ BEGIN
     END IF;
 END$$
 DELIMITER ;
-
