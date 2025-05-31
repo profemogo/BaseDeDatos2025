@@ -9,12 +9,12 @@
  **/ 
 
 -- ============================================================
--- CreateDeleteUser
+-- DeleteUser
 -- ============================================================
 
 DELIMITER $$
 
-CREATE PROCEDURE CreateDeleteUser(
+CREATE PROCEDURE DeleteUser(
     IN user_id INT
 )
 BEGIN

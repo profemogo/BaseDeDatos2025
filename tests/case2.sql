@@ -313,4 +313,4 @@ CALL CreateExpenseWithSplits(
 DELETE FROM WorkspaceUser WHERE user_id = @user_carlos_id AND workspace_id = @workspace_apartamento_id;
 
 -- Tiempo despues decide eliminar su cuenta de ExpenseApp porque ya no comparte gastos y no le interesa tener control de sus finanzas
-CALL CreateDeleteUser(@user_carlos_id);
+CALL DeleteUser(@user_carlos_id);
