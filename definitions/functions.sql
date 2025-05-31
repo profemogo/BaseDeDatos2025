@@ -1,3 +1,13 @@
+/**
+ * Expenses App
+ *
+ * Author: Ender Jose Puentes Vargas
+ * CI: V-25153102
+ *
+ * Functions Definition
+ * 
+ **/ 
+
 -- ============================================================
 -- GetUserWorkspaceBalance
 -- ============================================================
