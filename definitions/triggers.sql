@@ -8,7 +8,9 @@
  * 
  **/ 
 
--- User Table Triggers 
+-- ============================================================
+-- User Table Triggers
+-- ============================================================
 
 -- Trigger before insert (encrypt password)
 DELIMITER $$
@@ -30,7 +32,27 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- ============================================================
+-- Workspace Table Triggers
+-- ============================================================
+
+-- Trigger before insert (set created by user id to member of the workspace)
+DELIMITER $$
+CREATE TRIGGER trigger_after_insert_workspace
+AFTER INSERT ON Workspace
+FOR EACH ROW
+BEGIN
+    INSERT INTO WorkspaceUser (workspace_id, user_id)
+    VALUES (
+        NEW.id,
+        NEW.created_by_user_id
+    );
+END$$
+DELIMITER ;
+
+-- ============================================================
 -- WorkspaceInvitation Table Triggers
+-- ============================================================
 
 -- Trigger before update (update status)
 DELIMITER $$
@@ -49,7 +71,9 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- ============================================================
 -- Expense Table Triggers
+-- ============================================================
 
 -- Trigger before update (create comment)
 DELIMITER $$
@@ -164,7 +188,9 @@ BEGIN
 END$$
 DELIMITER ;
 
+-- ============================================================
 -- ExpenseSplit Table Triggers
+-- ============================================================
 
 -- Trigger before update (create comment for amount changes)
 DELIMITER $$
