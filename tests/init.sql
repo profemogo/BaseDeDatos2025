@@ -90,6 +90,7 @@ CALL CreateExpenseWithSplits(
         'amount', 100,
         'expense_date', '2025-05-31 12:00:05',
         'type', 'SplitEqual',
+        'paid_by_user_id', @user_maria_id,
         'created_by_user_id', @user_juan_id
     ),
     JSON_ARRAY(

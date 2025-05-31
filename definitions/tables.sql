@@ -112,11 +112,13 @@ CREATE TABLE Expense (
     amount DECIMAL(10, 2) NOT NULL,
     expense_date TIMESTAMP NOT NULL,
     type ENUM('Transfer', 'SplitEqual', 'SplitUnequal', 'SinglePayer') NOT NULL,
+    paid_by_user_id INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     created_by_user_id INTEGER NOT NULL,
     updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
     updated_by_user_id INTEGER,
     FOREIGN KEY (workspace_id) REFERENCES Workspace(id),
+    FOREIGN KEY (paid_by_user_id) REFERENCES User(id),
     FOREIGN KEY (category_id) REFERENCES Category(id),
     FOREIGN KEY (created_by_user_id) REFERENCES User(id),
     FOREIGN KEY (updated_by_user_id) REFERENCES User(id)

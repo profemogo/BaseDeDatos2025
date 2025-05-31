@@ -185,6 +185,29 @@ BEGIN
         );
     END IF;
 
+    -- Paid by user id
+    IF NEW.paid_by_user_id != OLD.paid_by_user_id THEN
+        -- Get the old and new paid by user names
+        SET @old_paid_by_user_name = '';
+        SET @new_paid_by_user_name = '';
+
+        SELECT name INTO @old_paid_by_user_name FROM User WHERE id = OLD.paid_by_user_id;
+        SELECT name INTO @new_paid_by_user_name FROM User WHERE id = NEW.paid_by_user_id;
+
+        -- Create the comment
+        INSERT INTO ExpenseComment (expense_id, user_id, comment)
+        VALUES (
+            NEW.id, 
+            NEW.updated_by_user_id, 
+            CONCAT(
+                'El usuario que pagó esta transacción fue cambiado de ',
+                @old_paid_by_user_name,
+                ' a ',
+                @new_paid_by_user_name
+            )
+        );
+    END IF;
+
 END$$
 DELIMITER ;
 

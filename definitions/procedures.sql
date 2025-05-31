@@ -56,6 +56,7 @@ BEGIN
     SET @expense_amount = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.amount'));
     SET @expense_date = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.expense_date'));
     SET @expense_type = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.type'));
+    SET @expense_paid_by_user_id = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.paid_by_user_id'));
     SET @expense_created_by_user_id = JSON_UNQUOTE(JSON_EXTRACT(expense, '$.created_by_user_id'));
 
     INSERT INTO Expense (
@@ -66,6 +67,7 @@ BEGIN
         amount,
         expense_date,
         type,
+        paid_by_user_id,
         created_by_user_id
     ) VALUES (
         @expense_name,
@@ -75,6 +77,7 @@ BEGIN
         @expense_amount,
         @expense_date,
         @expense_type,
+        @expense_paid_by_user_id,
         @expense_created_by_user_id
     );
     SET new_expense_id = LAST_INSERT_ID();
