@@ -19,11 +19,19 @@ DB_NAME=$1
 DB_USER=$2 
 DB_PASSWORD=$3
 
+# Initialize seeds
+echo "Initializing seeds"
+
 # Seed the currencies
+echo "Seeding currencies"
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/currencies.sql
 
 # Seed the category groups
+echo "Seeding category groups"
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/categories-group.sql
 
-# Seed the categories
+# Seed the categories   
+echo "Seeding categories"
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./seeds/categories.sql
+
+echo "Seeds initialized successfully"

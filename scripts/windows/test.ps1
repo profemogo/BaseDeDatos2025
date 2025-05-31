@@ -19,4 +19,6 @@ param(
 )
 
 # Test the database
+Write-Host "Testing database"
 mysql -u $DbUser -p$DbPassword $DbName < .\tests\case1.sql
+Write-Host "Tests completed successfully"

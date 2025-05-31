@@ -18,11 +18,20 @@ param(
     [string]$DbPassword
 )
 
+# Initialize seeds
+Write-Host "Initializing seeds"
+
+# Seed the currencies
+Write-Host "Seeding currencies"
 # Seed the currencies
 mysql -u $DbUser -p$DbPassword $DbName < .\seeds\currencies.sql
 
 # Seed the category groups
+Write-Host "Seeding category groups"
 mysql -u $DbUser -p$DbPassword $DbName < .\seeds\categories-group.sql
 
 # Seed the categories
+Write-Host "Seeding categories"
 mysql -u $DbUser -p$DbPassword $DbName < .\seeds\categories.sql
+
+Write-Host "Seeds initialized successfully"

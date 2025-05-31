@@ -20,4 +20,6 @@ DB_USER=$2
 DB_PASSWORD=$3
 
 # Test the database
+echo "Testing database"
 mysql -u $DB_USER -p$DB_PASSWORD $DB_NAME < ./tests/case1.sql
+echo "Tests completed successfully"
