@@ -163,3 +163,36 @@ BEGIN
 
 END$$
 DELIMITER ;
+
+-- ExpenseSplit Table Triggers
+
+-- Trigger before update (create comment for amount changes)
+DELIMITER $$
+CREATE TRIGGER trigger_before_update_expense_split
+BEFORE UPDATE ON ExpenseSplit
+FOR EACH ROW
+BEGIN
+    -- Amount
+    IF NEW.amount != OLD.amount THEN
+        -- Get the split user name
+        SET @split_user_name = '';
+        SELECT name INTO @split_user_name FROM User WHERE id = NEW.user_id;
+
+        -- Create the comment
+        INSERT INTO ExpenseComment (expense_id, user_id, comment)
+        VALUES (
+            NEW.expense_id, 
+            NEW.updated_by_user_id,
+            CONCAT(
+                'La contribución de ',
+                @split_user_name,
+                ' fue cambiada de ',
+                OLD.amount,
+                ' a ',
+                NEW.amount
+            )
+        );
+    END IF;
+END$$
+DELIMITER ;
+
