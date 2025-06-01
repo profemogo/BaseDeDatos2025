@@ -126,6 +126,23 @@ mysql -u tu_usuario -p swimmingProject_v1 < backup.sql
 - Los records se registran y validan automáticamente
 - Todos los cambios quedan registrados en historial_cambios
 - Sistema optimizado con índices para consultas frecuentes
+- Los rankings se devuelven en formato JSON para mejor integración
+- Compatible con MySQL 9.2.0 o superior
+
+### Ejemplos de Consultas Avanzadas
+
+```sql
+-- Obtener ranking completo de clubes para 2024
+SELECT 
+    c.nombre as club,
+    JSON_EXTRACT(CalcularRankingClub(c.id, 2024), '$.posicion') as posicion,
+    JSON_EXTRACT(CalcularRankingClub(c.id, 2024), '$.puntaje') as puntaje
+FROM Club c
+ORDER BY posicion;
+
+-- Calcular puntaje de un nadador en una competencia
+SELECT CalcularPuntajeCompetencia(1, 1) as puntaje;
+```
 
 Hecho Por: Julio Cesar Vasquez Garcia
 
