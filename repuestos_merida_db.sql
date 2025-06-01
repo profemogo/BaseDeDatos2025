@@ -163,3 +163,61 @@ CREATE INDEX idx_repuestos_vendedor ON repuestos(vendedor_id);
 CREATE INDEX idx_repuestos_categoria ON repuestos(categoria_id);
 CREATE INDEX idx_solicitudes_comprador ON solicitudes(comprador_id);
 CREATE INDEX idx_mensajes_receptor ON mensajes(receptor_id);
+
+-- Index de cada nombre de repuesto
+CREATE INDEX IF NOT EXISTS idx_nombre_repuesto ON repuestos(nombre);
+
+-- Trigger: deduct stock and log to historial_stock when solicitud is approved
+DELIMITER $$
+CREATE TRIGGER tr_restar_stock
+AFTER UPDATE ON solicitudes
+FOR EACH ROW
+BEGIN
+    IF NEW.estado = 'aprobado' AND OLD.estado != 'aprobado' THEN
+        UPDATE repuestos
+        SET stock = stock - NEW.cantidad
+        WHERE id = NEW.repuesto_id;
+
+        INSERT INTO historial_stock(repuesto_id, cambio, motivo)
+        VALUES (NEW.repuesto_id, -NEW.cantidad, 'Venta aprobada');
+    END IF;
+END$$
+DELIMITER ;
+
+-- Trigger: detect when a mensaje is marked as read
+DELIMITER $$
+CREATE TRIGGER tr_mensaje_leido
+AFTER UPDATE ON mensajes
+FOR EACH ROW
+BEGIN
+    IF NEW.leido = TRUE AND OLD.leido = FALSE THEN
+    END IF;
+END$$
+DELIMITER ;
+
+
+-- Usuarios
+INSERT INTO users (name, email, password, role, telefono) VALUES
+('Juan Pérez', 'juan@correo.com', '1234', 'vendedor', '0414000001'),
+('Ana Gómez', 'ana@correo.com', '1234', 'cliente', '0414000002');
+
+-- Categorías
+INSERT INTO categorias (nombre) VALUES ('Motor'), ('Frenos');
+
+-- Repuestos
+INSERT INTO repuestos (vendedor_id, nombre, descripcion, precio, stock, categoria_id, tipos_vehiculos)
+VALUES
+(1, 'Filtro de aceite', 'Filtro compatible con modelos 2018-2022', 15.50, 10, 1, 'carro,moto'),
+(1, 'Pastillas de freno', 'Juego de pastillas para freno delantero', 30.00, 8, 2, 'carro');
+
+-- Solicitudes
+INSERT INTO solicitudes (comprador_id, repuesto_id, cantidad, estado)
+VALUES (2, 1, 2, 'pendiente');
+
+-- Mensajes
+INSERT INTO mensajes (emisor_id, receptor_id, contenido) VALUES
+(2, 1, 'Hola, ¿tienes stock disponible?');
+
+-- Reseñas
+INSERT INTO resenas (repuesto_id, comprador_id, calificacion, comentario)
+VALUES (1, 2, 5, 'Excelente calidad');
