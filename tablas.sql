@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS CategoriaEdad;
 DROP TABLE IF EXISTS Club;
 DROP TABLE IF EXISTS Genero;
 
--- tablas base (sin dependencias)
+-- Tablas base (sin dependencias)
 CREATE TABLE CategoriaEdad (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -63,7 +63,7 @@ CREATE TABLE historial_cambios (
     fecha_cambio TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
---tablas con dependencias simples
+-- Tablas con dependencias simples
 CREATE TABLE EstiloMetraje (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     estilo_id BIGINT,
@@ -101,7 +101,7 @@ CREATE TABLE Entrenadores (
     FOREIGN KEY (club_id) REFERENCES Club(id)
 );
 
--- tablas con multiples dependencias
+-- Tablas con multiples dependencias
 CREATE TABLE Nadadores (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
@@ -174,25 +174,13 @@ CREATE TABLE Tiempos (
     FOREIGN KEY (estilo_metraje_id) REFERENCES EstiloMetraje(id)
 );
 
--- Índices para Nadadores
+-- Índices para optimización
 CREATE INDEX idx_nadadores_club ON Nadadores(club_id);
 CREATE INDEX idx_nadadores_categoria ON Nadadores(categoria_edad_id);
 CREATE INDEX idx_nadadores_cedula ON Nadadores(cedula);
-
--- Índices para Competencias
 CREATE INDEX idx_competencias_club ON Competencias(club_id);
-
--- Índices para Series
 CREATE INDEX idx_series_categoria_genero ON Series(categoria_edad_id, genero_id);
 CREATE INDEX idx_series_estilo_metraje ON Series(estilo_metraje_id);
-
--- Índices para RegistroCompetencias
 CREATE INDEX idx_registro_nadador_competencia ON RegistroCompetencias(nadador_id, competencia_id);
-
--- Índices para Tiempos
 CREATE INDEX idx_tiempos_registro ON Tiempos(registro_competencia_id);
-
--- Índices para Records
 CREATE INDEX idx_records_nadador_estilo ON Records(nadador_id, estilo_metraje_id);
-
--- en un sistema de este estilo; las consultas son mas frecuentes que las actualizaciones; se aplican indices en las columnas mas frecuentes en las consultas

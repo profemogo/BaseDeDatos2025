@@ -1,5 +1,8 @@
 USE swimmingProject_v1;
 
+DROP FUNCTION IF EXISTS CalcularPuntajeCompetencia;
+DROP FUNCTION IF EXISTS CalcularRankingClub;
+
 -- =============================================
 -- Función: CalcularPuntajeCompetencia
 -- Descripción: Calcula el puntaje total de un nadador en una competencia específica
@@ -20,7 +23,7 @@ USE swimmingProject_v1;
 -- =============================================
 DELIMITER //
 
-CREATE OR REPLACE FUNCTION CalcularPuntajeCompetencia(
+CREATE FUNCTION CalcularPuntajeCompetencia(
     p_nadador_id BIGINT,
     p_competencia_id BIGINT
 ) RETURNS DECIMAL(10,2)
@@ -66,7 +69,7 @@ END //
 --   - Suma de puntos de competencias de todos los nadadores del club
 -- =============================================
 
-CREATE OR REPLACE FUNCTION CalcularRankingClub(
+CREATE FUNCTION CalcularRankingClub(
     p_club_id BIGINT,
     p_anio INT
 ) RETURNS JSON

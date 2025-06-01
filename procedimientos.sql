@@ -1,5 +1,8 @@
 USE swimmingProject_v1;
 
+DROP PROCEDURE IF EXISTS actualizar_categorias_edad;
+DROP PROCEDURE IF EXISTS registrar_nadador_competencia;
+
 -- =============================================
 -- Procedimiento: actualizar_categorias_edad
 -- Descripción: Actualiza automáticamente las categorías de edad de todos los nadadores
@@ -28,6 +31,13 @@ BEGIN
     DECLARE edad_actual INT;
     DECLARE categoria_correcta BIGINT;
     
+    DECLARE cur CURSOR FOR 
+        SELECT id, fecha_nacimiento, categoria_edad_id 
+        FROM Nadadores
+        FOR UPDATE;
+    
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    
     -- Manejador de errores para garantizar rollback en caso de excepción
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
@@ -37,14 +47,6 @@ BEGIN
 
     -- Iniciar transacción 
     START TRANSACTION;
-    
-    -- Cursor para procesar todos los nadadores
-    DECLARE cur CURSOR FOR 
-        SELECT id, fecha_nacimiento, categoria_edad_id 
-        FROM Nadadores
-        FOR UPDATE;
-    
-    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
     
     OPEN cur;
     
