@@ -68,14 +68,11 @@ sudo apt-get install make  # En sistemas Debian/Ubuntu
 ### Ejecución Manual (sin Makefile)
 
 ```bash
-mysql -u root -p -e "CREATE DATABASE SocialNetworkDB;"
-mysql -u root -p SocialNetworkDB < sql/structure/social_network_db.sql
-mysql -u root -p SocialNetworkDB < sql/structure/indexes.sql
-mysql -u root -p SocialNetworkDB < sql/structure/triggers.sql
-mysql -u root -p SocialNetworkDB < sql/structure/procedures_and_functions.sql
-mysql -u root -p SocialNetworkDB < sql/structure/security.sql
-mysql -u root -p SocialNetworkDB < sql/structure/views.sql
-mysql -u root -p SocialNetworkDB < sql/structure/default_values.sql
-mysql -u root -p SocialNetworkDB < sql/test/testing_data.sql
-mysql -u root -p SocialNetworkDB < sql/test/create_users_test.sql
+mysql -u root -p -e "CREATE DATABASE EventManagementDB;"
+mysql -u root -p EventManagementDB < sql/structure/event_db.sql
+mysql -u root -p EventManagementDB < sql/structure/indexes.sql
+mysql -u root -p EventManagementDB < sql/structure/triggers.sql
+mysql -u root -p EventManagementDB < sql/structure/procedures_and_functions.sql
+mysql -u root -p EventManagementDB < sql/structure/roles.sql
+mysql -u root -p EventManagementDB < sql/structure/views.sql
 ```
