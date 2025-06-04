@@ -1,122 +1,46 @@
-# Base de Datos Red Social - Juan Gómez
+# 🎉 Event Management Database - Juan Gomez
 
-## Descripción
+Este proyecto define la estructura de una base de datos relacional para gestionar eventos y sus sedes (venues). Puede ser utilizada como base para aplicaciones web o móviles relacionadas con la organización de eventos, conciertos, conferencias, talleres, entre otros.
 
-Este proyecto contiene el diseño completo de una base de datos para una red social, incluyendo funcionalidades clave como gestión de usuarios, publicaciones, comentarios, likes, sistema de mensajería y control de acceso mediante roles. El enfoque está orientado a la escalabilidad, la modularidad y la integridad de los datos.
+## Estructura del proyecto
 
----
+- **`event_db.sql`**: Contiene las sentencias SQL para crear las tablas principales del sistema:
+  - `Venue`: Información de los lugares donde se realizan eventos.
+  - `Event`: Detalles de los eventos asociados a un lugar.
 
-## Estructura de la Base de Datos
+## Tablas principales
 
-### Tablas
+### Venue
+Almacena información sobre los lugares donde se pueden realizar eventos.
 
-#### 1. Usuarios y Géneros
-- **User**: Almacena la información principal de cada usuario (nombre, apellido, email, username, estado, género, etc.).
-- **Gender**: Define los géneros disponibles en la plataforma.
+### Event
+Contiene la información de los eventos: nombre, descripción, fecha y hora, costo, tipo de evento, si es destacado o recurrente, entre otros.
 
-#### 2. Publicaciones y Contenido
-- **Post**: Almacena publicaciones de los usuarios.
-- **PostType**: Define los tipos de publicaciones posibles (Texto, Imagen, Video, Mixto).
-- **ContentType**: Define el tipo de contenido individual dentro de cada publicación.
-- **PostContent**: Guarda los datos específicos del contenido (texto, imágenes, videos).
-- **PostLike**: Registra los "me gusta" en publicaciones.
+### User
+Contiene la informacion del usuario, su id, su nombre su email y contraseña
 
-#### 3. Comentarios
-- **Comment**: Almacena los comentarios realizados en publicaciones.
-- **CommentLike**: Guarda los likes asociados a comentarios.
+### Favorite
+Contiene la informacion cuando un evento es marcado como favorito por un usuario
 
-#### 4. Sistema de Mensajería (Chat)
-- **Chat**: Define cada conversación (individual o grupal).
-- **UserChat**: Relación entre usuarios y chats.
-- **MessageType**: Especifica el tipo de mensaje (Texto, Imagen, Video, etc.).
-- **Message**: Almacena cada mensaje enviado.
-- **MessageReceptor**: Registra el estado de lectura y entrega de los mensajes por usuario.
+## Propósito de componentes avanzados
 
----
+### Vistas (Views)
+Permiten simplificar consultas complejas reutilizables. 
 
-## Vistas (Views)
+### Procedimientos Almacenados (Stored Procedures)
+Automatizan operaciones repetitivas o complejas. 
 
-### 1. ViewPostsDetailed
-**Propósito**: Ofrece una vista consolidada con información del autor de la publicación, cantidad de likes, comentarios y detalles del contenido.
+### Funciones (Functions)
+Devuelven valores útiles derivados de los datos. 
 
-**Ejemplo de uso:**
-```sql
-SELECT * FROM ViewPostsDetailed WHERE user_id = 1;
-```
+### Triggers
+Permiten ejecutar lógica automáticamente al realizar acciones sobre las tablas. 
 
----
+### Roles y Permisos
+Gestionan el acceso a la base de datos según el tipo de usuario (administrador, editor, lector).
 
-## Procedimientos y Funciones
-
-### 1. `DeactivateUser`
-**Propósito**: Realiza un borrado lógico del usuario desactivando sus publicaciones y comentarios, y eliminando sus likes.
-
-**Parámetro**:
-- `p_user_id`: ID del usuario a desactivar
-
-**Ejemplo de uso:**
-```sql
-CALL DeactivateUser(5);
-```
-
-### 2. `GetUserStats`
-**Propósito**: Recupera estadísticas del usuario (publicaciones, comentarios, likes dados/recibidos, mensajes enviados).
-
-**Parámetro**:
-- `p_user_id`: ID del usuario
-
-**Ejemplo de uso:**
-```sql
-CALL GetUserStats(5);
-```
-
-### 3. `UnreadMessagesCount`
-**Propósito**: Devuelve la cantidad de mensajes no leídos de un chat para un usuario.
-
-**Parámetros**:
-- `chat_id`: ID del chat
-- `user_id`: ID del usuario
-
-**Ejemplo de uso:**
-```sql
-SELECT UnreadMessagesCount(3, 1) AS unread_count;
-```
-
----
-
-## Triggers
-
-1. **validate_chat_participant**: Verifica que un usuario pertenezca a un chat antes de registrar la entrega del mensaje.
-2. **update_message_status**: Actualiza la fecha de lectura o entrega del mensaje cuando su estado cambia.
-3. **soft_delete_user**: Realiza borrado lógico en cascada de contenido del usuario desactivado.
-
----
-
-## Seguridad y Control de Acceso (Usuarios y Roles)
-
-El sistema implementa control de acceso mediante roles definidos con permisos específicos:
-
-### Roles Definidos
-
-- **super_admin**  
-  Acceso completo a todas las tablas y funciones.  
-  _Permisos_: `ALL PRIVILEGES` sobre toda la base.
-
-- **content_manager**  
-  Maneja publicaciones y comentarios.  
-  _Permisos_: `SELECT/INSERT/UPDATE` sobre `Post`, `PostContent`, `Comment`, `PostLike`, `CommentLike`, y ejecutar `DeactivateUser`.
-
-- **user_manager**  
-  Administra usuarios y su relación con chats.  
-  _Permisos_: `SELECT/INSERT/UPDATE` sobre `User`, `UserChat`, `Gender`, y ejecutar `DeactivateUser`.
-
-- **moderator**  
-  Puede desactivar contenido que infrinja normas.  
-  _Permisos_: `SELECT` sobre `Post`, `Comment`, `User` y `UPDATE(is_active)` en contenido.
-
----
-
-## Uso
+### Índices (Indexes)
+Mejoran el rendimiento de las consultas sobre columnas clave como `venue_id` o `datetime`.
 
 ### Requisitos Previos
 - MySQL instalado
@@ -141,16 +65,6 @@ sudo apt-get install make  # En sistemas Debian/Ubuntu
 
 ---
 
-### Parámetros Personalizados
-
-Puedes establecer credenciales manualmente al ejecutar los comandos:
-
-```bash
-make create_db DB_USER=usuario DB_NAME=nombre_bd DB_PASS=clave DB_HOST=localhost
-```
-
----
-
 ### Ejecución Manual (sin Makefile)
 
 ```bash
@@ -165,10 +79,3 @@ mysql -u root -p SocialNetworkDB < sql/structure/default_values.sql
 mysql -u root -p SocialNetworkDB < sql/test/testing_data.sql
 mysql -u root -p SocialNetworkDB < sql/test/create_users_test.sql
 ```
-
----
-
-## Documento de Planificación
-
-El diseño, planificación y desarrollo del proyecto están documentados en un archivo de planificación disponible en el repositorio:  
-📄 [`documentacion/planificacion_base_red_social.pdf`](./documentacion/planificacion_base_red_social.pdf)
