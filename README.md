@@ -101,6 +101,37 @@ Agrega aquí capturas de:
 - Solicitudes realizadas
 - Vista por rol
 
+## base de datos: 
+
+Puedes probar la base de datos de la siquiente forma.
+
+- Ingrega somo usuario root o con permisos suficientes para crear y modificar base de datos, para ejecutar la creacion de la base de datos repuestos_merida_db, asi lo hago yo 
+
+   ```bash
+   mysql -u root < repuestos_merida_db.sql
+   ```
+- Luego entra a mysql 
+
+ ```bash
+   mysql -u root
+   ```
+- Selecciona la base de datos 
+
+ ```bash
+   use use repuestos_merida_db;
+   ```
+- Ahora si puedes cargar los demas achivos necesarios en este orden: 
+
+```bash
+   SOURCE indices.sql;
+   SOURCE roles.sql;
+   SOURCE vistas.sql;
+   SOURCE procedimientos.sql;
+   SOURCE trigger.sql;      
+   SOURCE transaciones.sql;  
+   SOURCE test_completo.sql;
+   ```
+- El ultimo ejecuta un test general y muestra los resutaldos 
 ---
 
 ## 🙌 Autor
