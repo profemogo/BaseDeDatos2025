@@ -93,13 +93,19 @@ repuestos_merida_db
 
 ---
 
-## 🖥️ Capturas (opcional)
+## 🖥️ Capturas 
 
 Agrega aquí capturas de:
 - Panel de login
+ <img width="1226" alt="image" src="https://github.com/user-attachments/assets/fd208afa-ddcf-4f48-bd54-33b8d92245db" />
+
 - Lista de repuestos
 - Solicitudes realizadas
 - Vista por rol
+
+  <img width="1076" alt="image" src="https://github.com/user-attachments/assets/3dde7e0c-5e5b-4614-ad98-e206bc3ae673" />
+<img width="956" alt="image" src="https://github.com/user-attachments/assets/68d1d74a-bb04-4da8-91b5-2da810714648" />
+
 
 ## base de datos: 
 
