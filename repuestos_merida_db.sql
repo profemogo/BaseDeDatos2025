@@ -1,52 +1,46 @@
-
 CREATE DATABASE IF NOT EXISTS repuestos_merida_db;
 USE repuestos_merida_db;
 
--- Tabla de usuarios
 CREATE TABLE IF NOT EXISTS users (
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) UNIQUE NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role ENUM('administrador', 'vendedor', 'cliente') DEFAULT 'cliente',
+    role ENUM('cliente','vendedor','admin') DEFAULT 'cliente',
+    telefono VARCHAR(20),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Tabla de categorías
 CREATE TABLE IF NOT EXISTS categorias (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) UNIQUE NOT NULL
 );
 
--- Tabla de repuestos
 CREATE TABLE IF NOT EXISTS repuestos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     vendedor_id INT NOT NULL,
     nombre VARCHAR(100) NOT NULL,
     descripcion TEXT,
     precio DECIMAL(10,2) NOT NULL,
-    stock INT NOT NULL,
-    imagenes JSON,
+    stock INT DEFAULT 0,
     categoria_id INT,
-    tipos_vehiculos SET('moto', 'carro', 'anfibio', 'híbrido', 'eléctrico', 'bicicleta', 'triciclo'),
+    tipos_vehiculos SET('moto','carro','anfibio','híbrido','eléctrico','bicicleta','triciclo'),
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (vendedor_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (categoria_id) REFERENCES categorias(id)
 );
 
--- Tabla de solicitudes de compra
 CREATE TABLE IF NOT EXISTS solicitudes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     comprador_id INT,
     repuesto_id INT,
     cantidad INT,
-    estado ENUM('pendiente', 'aprobado', 'rechazado') DEFAULT 'pendiente',
+    estado ENUM('pendiente','aprobado','rechazado') DEFAULT 'pendiente',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (comprador_id) REFERENCES users(id),
     FOREIGN KEY (repuesto_id) REFERENCES repuestos(id)
 );
 
--- Tabla de mensajes
 CREATE TABLE IF NOT EXISTS mensajes (
     id INT AUTO_INCREMENT PRIMARY KEY,
     emisor_id INT,
@@ -58,166 +52,22 @@ CREATE TABLE IF NOT EXISTS mensajes (
     FOREIGN KEY (receptor_id) REFERENCES users(id)
 );
 
--- Vista: solo repuestos del vendedor conectado
-DROP VIEW IF EXISTS vista_repuestos_personales;
-CREATE VIEW vista_repuestos_personales AS
-SELECT * FROM repuestos WHERE vendedor_id = (SELECT id FROM users WHERE email = SESSION_USER());
+CREATE TABLE IF NOT EXISTS historial_stock (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    repuesto_id INT NOT NULL,
+    cambio INT NOT NULL,
+    motivo VARCHAR(255),
+    fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (repuesto_id) REFERENCES repuestos(id) ON DELETE CASCADE
+);
 
--- Crear usuarios MySQL con permisos por rol
-CREATE USER IF NOT EXISTS 'admin_user'@'localhost' IDENTIFIED BY 'admin_pass';
-GRANT ALL PRIVILEGES ON repuestos_merida_db.* TO 'admin_user'@'localhost';
-
-CREATE USER IF NOT EXISTS 'vendedor_user'@'localhost' IDENTIFIED BY 'vendedor_pass';
-GRANT SELECT, INSERT, UPDATE ON repuestos_merida_db.repuestos TO 'vendedor_user'@'localhost';
-GRANT SELECT, INSERT ON repuestos_merida_db.categorias TO 'vendedor_user'@'localhost';
-GRANT SELECT, INSERT, UPDATE ON repuestos_merida_db.mensajes TO 'vendedor_user'@'localhost';
-GRANT SELECT ON repuestos_merida_db.solicitudes TO 'vendedor_user'@'localhost';
-
-CREATE USER IF NOT EXISTS 'cliente_user'@'localhost' IDENTIFIED BY 'cliente_pass';
-GRANT SELECT ON repuestos_merida_db.repuestos TO 'cliente_user'@'localhost';
-GRANT SELECT ON repuestos_merida_db.categorias TO 'cliente_user'@'localhost';
-
-FLUSH PRIVILEGES;
-
--- Insertar usuario administrador inicial
-INSERT INTO users (name, email, password, role)
-VALUES ('Administrador BTM Studio', 'btmstudio@mail.com', 'byeliasmontilla', 'administrador')
-ON DUPLICATE KEY UPDATE email=email;
-
--- Enviar notificación al vendedor cuando alguien solicita un repuesto
-DELIMITER //
-CREATE TRIGGER after_solicitud_insert
-AFTER INSERT ON solicitudes
-FOR EACH ROW
-BEGIN
-    DECLARE vendedor INT;
-    SELECT vendedor_id INTO vendedor FROM repuestos WHERE id = NEW.repuesto_id;
-    
-    INSERT INTO mensajes (emisor_id, receptor_id, contenido)
-    VALUES (NEW.comprador_id, vendedor, CONCAT('Nueva solicitud para el repuesto ID ', NEW.repuesto_id));
-END;
-//
-DELIMITER ;
-
--- Transacción para finalizar una venta
-DELIMITER //
-
-CREATE PROCEDURE finalizar_venta(IN solicitud_id INT)
-BEGIN
-    DECLARE cantidad_solicitada INT;
-    DECLARE repuesto_id_val INT;
-    DECLARE stock_actual INT;
-    DECLARE comprador_id_val INT;
-    DECLARE vendedor_id_val INT;
-
-    -- Paso 1: Obtener datos de la solicitud (si está pendiente)
-    SELECT repuesto_id, cantidad, comprador_id
-    INTO repuesto_id_val, cantidad_solicitada, comprador_id_val
-    FROM solicitudes
-    WHERE id = solicitud_id AND estado = 'pendiente';
-
-    -- Paso 2: Obtener stock actual y vendedor
-    SELECT stock, vendedor_id
-    INTO stock_actual, vendedor_id_val
-    FROM repuestos
-    WHERE id = repuesto_id_val;
-
-    -- Paso 3: Verificar si hay stock suficiente
-    IF stock_actual >= cantidad_solicitada THEN
-
-        -- Iniciar transacción
-        START TRANSACTION;
-
-        -- Descontar stock
-        UPDATE repuestos
-        SET stock = stock - cantidad_solicitada
-        WHERE id = repuesto_id_val;
-
-        -- Marcar la solicitud como aprobada
-        UPDATE solicitudes
-        SET estado = 'aprobado'
-        WHERE id = solicitud_id;
-
-        -- Confirmar la transacción
-        COMMIT;
-
-        -- Mostrar IDs involucrados
-        SELECT 
-            repuesto_id_val AS repuesto_id,
-            vendedor_id_val AS vendedor_id,
-            comprador_id_val AS comprador_id;
-
-    ELSE
-        -- Cancelar si no hay stock suficiente
-        SIGNAL SQLSTATE '45000'
-        SET MESSAGE_TEXT = 'Stock insuficiente para completar la venta.';
-    END IF;
-END;
-//
-
-DELIMITER ;
-
--- Índices adicionales para acelerar búsquedas frecuentes
-CREATE INDEX idx_users_email ON users(email);
-CREATE INDEX idx_repuestos_vendedor ON repuestos(vendedor_id);
-CREATE INDEX idx_repuestos_categoria ON repuestos(categoria_id);
-CREATE INDEX idx_solicitudes_comprador ON solicitudes(comprador_id);
-CREATE INDEX idx_mensajes_receptor ON mensajes(receptor_id);
-
--- Index de cada nombre de repuesto
-CREATE INDEX IF NOT EXISTS idx_nombre_repuesto ON repuestos(nombre);
-
--- Trigger: deduct stock and log to historial_stock when solicitud is approved
-DELIMITER $$
-CREATE TRIGGER tr_restar_stock
-AFTER UPDATE ON solicitudes
-FOR EACH ROW
-BEGIN
-    IF NEW.estado = 'aprobado' AND OLD.estado != 'aprobado' THEN
-        UPDATE repuestos
-        SET stock = stock - NEW.cantidad
-        WHERE id = NEW.repuesto_id;
-
-        INSERT INTO historial_stock(repuesto_id, cambio, motivo)
-        VALUES (NEW.repuesto_id, -NEW.cantidad, 'Venta aprobada');
-    END IF;
-END$$
-DELIMITER ;
-
--- Trigger: detect when a mensaje is marked as read
-DELIMITER $$
-CREATE TRIGGER tr_mensaje_leido
-AFTER UPDATE ON mensajes
-FOR EACH ROW
-BEGIN
-    IF NEW.leido = TRUE AND OLD.leido = FALSE THEN
-    END IF;
-END$$
-DELIMITER ;
-
-
--- Usuarios
-INSERT INTO users (name, email, password, role, telefono) VALUES
-('Juan Pérez', 'juan@correo.com', '1234', 'vendedor', '0414000001'),
-('Ana Gómez', 'ana@correo.com', '1234', 'cliente', '0414000002');
-
--- Categorías
-INSERT INTO categorias (nombre) VALUES ('Motor'), ('Frenos');
-
--- Repuestos
-INSERT INTO repuestos (vendedor_id, nombre, descripcion, precio, stock, categoria_id, tipos_vehiculos)
-VALUES
-(1, 'Filtro de aceite', 'Filtro compatible con modelos 2018-2022', 15.50, 10, 1, 'carro,moto'),
-(1, 'Pastillas de freno', 'Juego de pastillas para freno delantero', 30.00, 8, 2, 'carro');
-
--- Solicitudes
-INSERT INTO solicitudes (comprador_id, repuesto_id, cantidad, estado)
-VALUES (2, 1, 2, 'pendiente');
-
--- Mensajes
-INSERT INTO mensajes (emisor_id, receptor_id, contenido) VALUES
-(2, 1, 'Hola, ¿tienes stock disponible?');
-
--- Reseñas
-INSERT INTO resenas (repuesto_id, comprador_id, calificacion, comentario)
-VALUES (1, 2, 5, 'Excelente calidad');
+CREATE TABLE IF NOT EXISTS resenas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    repuesto_id INT NOT NULL,
+    comprador_id INT NOT NULL,
+    calificacion INT CHECK (calificacion BETWEEN 1 AND 5),
+    comentario TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (repuesto_id) REFERENCES repuestos(id) ON DELETE CASCADE,
+    FOREIGN KEY (comprador_id) REFERENCES users(id) ON DELETE CASCADE
+);
